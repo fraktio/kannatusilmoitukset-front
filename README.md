@@ -12,7 +12,7 @@ A better API for fetching this processed data and the original history of suppor
 
 ## Installation
 
-todo
+Redirect all non-static requests to index.htm
 
 ## Development
 
