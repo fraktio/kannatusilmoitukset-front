@@ -20,21 +20,31 @@ angular.module('citizens-initiative', ['citizens-initiative-graph', 'ui.bootstra
             })
             .when('/:id/:pretty', {
                 controller: function($scope, $location, $routeParams, Graph, $dialog) {
-                    var initiative = {
-                        percentage: '50',
-                        totalSupportCount: '25000',
-                        name: {fi: 'Wat'},
-                        id: 'http://herpderp.fi/'
-                    };
-
                     var d = $dialog.dialog({
                         modalFade: true,
                         template: document.getElementById('initiatives-one.html').innerHTML,
                         controller: function($scope, dialog){
-                            $scope.initiative = Graph.data['https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id];
-                            $scope.close = function() {
-                                dialog.close();
+                            $scope.id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
+                            //_gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
+                            console.log('opened ' + $scope.id);
+                            $scope.initiative = function() {
+                                if (!Graph.data() || !Graph.data()[$scope.id]) {
+                                    return {name: {'fi':''}, currentTotal:0, totalSupportCount:[]};
+                                }
+
+                                var initiative = Graph.data()[$scope.id];
+                                if (!initiative.hasOwnProperty('support')) {
+                                    initiative.id = $scope.id;
+                                    initiative.support = initiativeSupportArray(initiative);
+                                    initiative.currentTotal = initiative.support[initiative.support.length-1][1];
+                                }
+
+                                return initiative;
                             };
+                            $scope.close = function() {
+                                dialog.hide();
+                            };
+                            $scope.graph = Graph;
                         }
                     });
                     d.open().then(function() {
@@ -58,7 +68,6 @@ angular.module('citizens-initiative-data', ['ngResource'])
 
         return {
             data: function() {
-                console.log('here');
                 return Data;
             },
             googleDataArray: function() {
@@ -80,16 +89,11 @@ angular.module('citizens-initiative-data', ['ngResource'])
                 }
 
                 var chartData = [];
-                data = $.map(data, function(initiative, i) {
-                    initiative.totalSupportCount = $.map(initiative.totalSupportCount, function(count, time) {
-                        time = timeParser(time);
-                        time = new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
-                        return {'time': time, 'count': count};
-                    });
-                    initiative.totalSupportCount.sort(function(a,b) {
-                        return a.time - b.time;
-                    });
-                    initiative.currentTotal = initiative.totalSupportCount[initiative.totalSupportCount.length-1].count;
+                data = $.map(data, function(initiative) {
+                    if (!initiative.hasOwnProperty('support')) {
+                        initiative.support = initiativeSupportArray(initiative);
+                        initiative.currentTotal = initiative.support[initiative.support.length-1][1];
+                    }
                     return initiative;
                 });
                 data.sort(function(b, a) {
@@ -107,12 +111,16 @@ angular.module('citizens-initiative-data', ['ngResource'])
                 var timeCount = {};
                 var i;
                 var url;
-                window.dateFullFormatter = new google.visualization.DateFormat({pattern: "dd.MM.yyyy HH:mm:ss"});
                 $.each(data, function(i, initiative) {
                     id = initiative.id;
-                    $.each(initiative.totalSupportCount, function(i, count) {
-                        time = count.time;
-                        count = count.count;
+                    $.each(initiative.support, function(i, count) {
+                        time = count[0];
+                        count = count[1];
+
+                        if (!time || !count) {
+                            return;
+                        }
+
                         if (!timeCount.hasOwnProperty(time)) {
                             timeCount[time] = Array(idPos.length);
                             timeCount[time][0] = time;
@@ -141,6 +149,7 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
     .factory('Graph', function(Data) {
         var wrapper = null;
         var locationSetter = null;
+        var drawnSingleId = null;
         return {
             data: function() {
                 return Data.data();
@@ -148,7 +157,93 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
             setLocationSetter: function(setter) {
                 locationSetter = setter;
             },
-            draw: function() {
+            drawSingle: function(containerId, initiative) {
+                if (!document.getElementById(containerId)) {
+                    return;
+                }
+                console.log('' + drawnSingleId + ' vs ' + initiative.id);
+                if (document.getElementById(containerId).childElementCount > 0 || drawnSingleId === initiative.id) {
+                    return;
+                }
+
+                var data = new google.visualization.DataTable();
+                data.addColumn('datetime', 'Time');
+                data.addColumn('number', initiative.name.fi);
+                data.addColumn({type:'boolean',role:'certainty'});
+                data.addColumn({type:'string',role:'tooltip',p:{html:true}});
+
+                var rows = [];
+                angular.forEach(initiative.support, function(value) {
+                    if (!value.hasOwnProperty('length') || value.length !== 2) {
+                        return;
+                    }
+                    var val = value.slice(0);
+                    val.push(true);
+                    val.push('<div class="initiative-tooltip"><p><span class="count">' + value[1] + '</span><span class="date">' + dateFullFormatter.formatValue(value[0]) + '</span></p></div>');
+                    rows.push(val);
+                });
+
+                if (rows.length < 1) {
+                    return;
+                }
+
+                rows.unshift([new Date(initiative.startDate), 0, false, '<div class="initiative-tooltip"><p><span class="count">0</span><span class="date">' + dateFullFormatter.formatValue(new Date(initiative.startDate)) + '</span></p></div>']);
+
+                data.addRows(rows);
+
+                var chart = new google.visualization.ChartWrapper({
+                    chartType: 'LineChart',
+                    containerId: containerId,
+                    dataTable: data
+                });
+                chart.setOptions({
+                    'backgroundColor': 'white',
+                    'hAxis': {
+                        'format': 'MM.yyyy',
+                        'minValue': new Date(initiative.startDate),
+                        'maxValue': new Date(initiative.endDate),
+                        'viewWindow': {
+                            'min': new Date(initiative.startDate),
+                            'max': new Date(initiative.endDate)
+                        }
+                    },
+                    'vAxis': {
+                        'minValue': 0,
+                        'maxValue': 50000,
+                        'viewWindow': {
+                            'min': 0,
+                            'max': 50000
+                        },
+                        'gridlines': {
+                            'count': 6
+                        }
+                    },
+                    'legend': {
+                        'position': 'none'
+                    },
+                    'chartArea': {
+                        'top': 20,
+                        'left': 60,
+                        'width': 450,
+                        'height': 260
+                    },
+                    width: 530,
+                    height: 300,
+                    'tooltip': {
+                        'isHtml': true
+                    }
+                });
+                console.log('drawing single');
+                drawnSingleId = initiative.id;
+                chart.draw();
+            },
+            draw: function(containerId) {
+                if (!document.getElementById(containerId)) {
+                    return;
+                }
+                if (document.getElementById(containerId).childElementCount > 1) {
+                    return;
+                }
                 var arrayedData = Data.googleDataArray().slice(0);
 
                 if (arrayedData.length < 1) {
@@ -170,7 +265,7 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
                 dataTable.addRows(arrayedData);
                 wrapper = new google.visualization.ChartWrapper({
                     chartType: 'LineChart',
-                    containerId: 'chart_div',
+                    containerId: containerId,
                     dataTable: dataTable
                 });
                 wrapper.setOptions({
@@ -187,7 +282,7 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
                     }
                 });
 
-                google.visualization.events.addListener(wrapper, 'select', function(e) {
+                var listener = google.visualization.events.addListener(wrapper, 'select', function(e) {
                     if (wrapper.getChart().getSelection().length < 1) {
                         return;
                     }
@@ -195,12 +290,23 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
                     locationSetter('/' + id.match(/\d+$/)[0] + '/');
                 });
 
+                console.log('drawing all');
                 wrapper.draw();
             }
         };
     });
 
 
+var initiativeSupportArray = function(initiative) {
+    var support = [];
+    angular.forEach(initiative.totalSupportCount, function(value, time) {
+        time = timeParser(time);
+        time = new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
+        support.push([time, value]);
+    });
+    support.sort(function(a,b) {return a[0] - b[0];});
+    return support;
+};
 
 var timeParser = function(time) {
     return function(start, length) {
@@ -211,84 +317,27 @@ var idToUrl = function(id) {
     return 'https://www.kansalaisaloite.fi/fi/aloite/' + id.match(/\d+$/)[0];
 };
 
-    /*google.visualization.events.addListener(wrapper, 'select', function(e) {
-        if (wrapper.getChart().getSelection().length < 1) {
-            return;
-        }
-        var id = idPos[wrapper.getChart().getSelection()[0].column];
-
-        _gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
+    /*
 
         var initiativeData = data[id].totalSupportCount.map(function(count, i) {
-            return [count.time, count.count, true, '<div class="initiative-tooltip"><p><span class="count">' + count.count + '</span><span class="date">' + dateFullFormatter.formatValue(count.time) + '</span></p></div>'];
+            return [count.time, count.count, true, ];
         });
         initiativeData.sort(function(a, b) {
             return a[0] - b[0];
         });
-        initiativeData.unshift([new Date(data[id].startDate), 0, false, '<div class="initiative-tooltip"><p><span class="count">0</span><span class="date">' + dateFullFormatter.formatValue(new Date(data[id].startDate)) + '</span></p></div>']);
+
 
         // ...
+    });
+    */
 
-        $dialog = $('.initiative-details');
-        $dialog.modal().on('hidden', function() {
-            $dialog.remove();
-        });
-
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('datetime', 'Aika');
-        dataTable.addColumn('number', data[id].name.fi);
-        dataTable.addColumn({type: 'boolean', role: 'certainty'});
-        dataTable.addColumn({type: 'string', role: 'tooltip',p:{html:true}});
-        dataTable.addRows(initiativeData);
-
-        var modalWrapper = new google.visualization.ChartWrapper({
-            chartType: 'LineChart',
-            containerId: 'initiative-chart-fulltime',
-            dataTable: dataTable
-        });
-        modalWrapper.setOptions({
-            'backgroundColor': 'white',
-            'hAxis': {
-                'format': 'MM.yyyy',
-                'minValue': new Date(data[id].startDate),
-                'maxValue': new Date(data[id].endDate),
-                'viewWindow': {
-                    'min': new Date(data[id].startDate),
-                    'max': new Date(data[id].endDate)
-                }
-            },
-            'vAxis': {
-                'maxValue': 50000,
-                'viewWindow': {
-                    'max': 50000
-                },
-                'gridlines': {
-                    'count': 6
-                }
-            },
-            'legend': {
-                'position': 'none'
-            },
-            'chartArea': {
-                'top': 20,
-                'left': 60,
-                'width': 450,
-                'height': 260
-            },
-            width: 530,
-            height: 300,
-            'tooltip': {
-                'isHtml': true
-            }
-        });
-        modalWrapper.draw();
-    });*/
 google.load('visualization', '1', {packages:['corechart'], callback:function() {
+    window.dateFullFormatter = new google.visualization.DateFormat({pattern: "dd.MM.yyyy HH:mm:ss"});
     angular.bootstrap(document, ['citizens-initiative']);
 }});
 
 new Spinner({lines: 9, length: 4, width: 5, radius: 13, corners: 1, rotate: 5, color: '#000', speed: 1, trail: 79, shadow: false, hwaccel: false, className: 'spinner', zIndex: 2e9, top: '200', left: 'auto'}).spin(document.getElementById('chart_div'));
-/*
+
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-37909592-1']);
 _gaq.push(['_trackPageview']);
@@ -304,4 +353,3 @@ _gaq.push(['_trackPageview']);
     js.src = "//connect.facebook.net/fi_FI/all.js#xfbml=1";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
-*/
