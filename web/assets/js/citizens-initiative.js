@@ -19,30 +19,38 @@ angular.module('citizens-initiative', ['citizens-initiative-graph', 'ui.bootstra
                 template: document.getElementById('initiatives-all.html').innerHTML
             })
             .when('/:id/:pretty', {
-                controller: function($scope, $location, $routeParams, Graph, $dialog) {
+                controller: function($scope, $location, $routeParams, Data, Graph, $dialog) {
+                    $scope.id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                     var d = $dialog.dialog({
                         modalFade: true,
                         template: document.getElementById('initiatives-one.html').innerHTML,
-                        controller: function($scope, dialog){
-                            $scope.id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
-                            //_gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-                            console.log('opened ' + $scope.id);
-                            $scope.initiative = function() {
-                                if (!Graph.data() || !Graph.data()[$scope.id]) {
-                                    return {name: {'fi':''}, currentTotal:0, totalSupportCount:[]};
+                        resolve: {
+                            id: $scope.id
+                        },
+                        controller: function($scope, dialog, id){
+                            _gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
+                            $scope.id = id;
+                            $scope.data = Data.data;
+
+                            $scope.initiative = {name: {'fi':''}, currentTotal:0, totalSupportCount:[]};
+
+                            $scope.$watch('data', function(data) {
+                                if (!data || !data[$scope.id]) {
+                                    return;
                                 }
 
-                                var initiative = Graph.data()[$scope.id];
+                                var initiative = data[$scope.id];
                                 if (!initiative.hasOwnProperty('support')) {
                                     initiative.id = $scope.id;
                                     initiative.support = initiativeSupportArray(initiative);
                                     initiative.currentTotal = initiative.support[initiative.support.length-1][1];
                                 }
 
-                                return initiative;
-                            };
+                                $scope.initiative = initiative;
+                            }, true);
+
                             $scope.close = function() {
-                                dialog.hide();
+                                dialog.close();
                             };
                             $scope.graph = Graph;
                         }
@@ -67,9 +75,7 @@ angular.module('citizens-initiative-data', ['ngResource'])
         var cache = null;
 
         return {
-            data: function() {
-                return Data;
-            },
+            data: Data,
             googleDataArray: function() {
                 if (cache) {
                     return cache;
@@ -146,10 +152,28 @@ angular.module('citizens-initiative-data', ['ngResource'])
     });
 
 angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
+    .directive('initiativeChartSingle', function() {
+        return {
+            restrict: 'E',
+            transclude: true,
+            replace: true,
+            scope: {
+                initiative: '=initiative'
+            },
+            controller: function($scope, $element, $attrs, Graph) {
+                $scope.$watch('initiative', function(initiative) {
+                    if (!initiative.id) {
+                        return;
+                    }
+                    Graph.drawSingle('initiative-chart-fulltime', initiative);
+                });
+            },
+            template: '<div ng-transclude></div>'
+        };
+    })
     .factory('Graph', function(Data) {
         var wrapper = null;
         var locationSetter = null;
-        var drawnSingleId = null;
         return {
             data: function() {
                 return Data.data();
@@ -159,10 +183,6 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
             },
             drawSingle: function(containerId, initiative) {
                 if (!document.getElementById(containerId)) {
-                    return;
-                }
-                console.log('' + drawnSingleId + ' vs ' + initiative.id);
-                if (document.getElementById(containerId).childElementCount > 0 || drawnSingleId === initiative.id) {
                     return;
                 }
 
@@ -233,8 +253,7 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
                         'isHtml': true
                     }
                 });
-                console.log('drawing single');
-                drawnSingleId = initiative.id;
+
                 chart.draw();
             },
             draw: function(containerId) {
@@ -290,7 +309,6 @@ angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
                     locationSetter('/' + id.match(/\d+$/)[0] + '/');
                 });
 
-                console.log('drawing all');
                 wrapper.draw();
             }
         };

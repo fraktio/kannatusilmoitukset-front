@@ -61,14 +61,15 @@
         <div class="modal-header">
             <button type="button" class="close" ng-click="close()" aria-hidden="true">×</button>
             <h3 id="initiative-modal-label">
-                {{initiative().currentTotal/500 | number:0}}% {{initiative().currentTotal}}/50000
+                {{initiative.currentTotal/500 | number:0}}% {{initiative.currentTotal}}/50000
             </h3>
         </div>
         <div class="modal-body">
-            <p>{{initiative().name.fi}}</p>
+            <p>{{initiative.name.fi}}</p>
             <p><a href="{{initiative.id}}">Aloite kansalaisaloite.fi:ssä</a></p>
-            <div id="initiative-chart-fulltime" style="width: 530px; height: 300px;"></div>
-            {{graph.drawSingle('initiative-chart-fulltime', initiative())}}
+            <initiative-chart-single initiative="initiative">
+                <div id="initiative-chart-fulltime" style="width: 530px; height: 300px;"></div>
+            </initiative-chart-single>
         </div>
     </script>
     <script type="text/ng-template" id="initiatives-tooltip-all.html">
