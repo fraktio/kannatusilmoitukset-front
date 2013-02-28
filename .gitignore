@@ -1,2 +1,5 @@
 web/initiatives-all.json
+.idea
+components
+node_modules
 
