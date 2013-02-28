@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
 
-    <link rel="prefetch" href="initiatives-all.json">
+    <link rel="prefetch" href="/initiatives-all.json">
     <link rel="prefetch" href="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css">
     <link rel="prefetch" href="//www.google.com/uds/?file=visualization&v=1&packages=corechart&async=2m">
     <link rel="prefetch" href="//www.google-analytics.com/ga.js">
@@ -11,37 +11,10 @@
 
     <meta name="viewport" content="width=380, initial-scale=1">
     <title>Kansalaisaloitteiden kannatusilmoitukset</title>
-    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="assets/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css" rel="stylesheet" type="text/css">
-    <style>
-        .google-visualization-tooltip .initiative-tooltip {
-            padding: 10px;
-        }
-        .google-visualization-tooltip .initiative-tooltip p {
-            margin: 0;
-            padding: 0;
-            max-width: 400px;
-        }
-        .google-visualization-tooltip .initiative-tooltip .count {
-            font-weight: bold;
-            font-size: 130%;
-            margin: 0 10px 0 0;
-        }
-        #chart_div svg circle, #chart_div svg path, #chart_div svg > g:nth-of-type(1) > g {
-            cursor: pointer;
-        }
-        body > .goog-tooltip {
-            display: none;
-        }
-        .modal {
-            position: absolute;
-        }
-        .modal .modal-body {
-            max-height: 500px;
-            overflow: hidden;
-        }
-    </style>
+    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css" rel="stylesheet">
+    <link href="/assets/css/citizens-initiative.css" rel="stylesheet">
 
     <meta property="og:title" content="Kansalaisaloitteiden kannatusilmoitukset" />
     <meta property="og:type" content="website" />
@@ -78,220 +51,41 @@
             </div>
         </div>
     </div>
+
+    <div ng-view></div>
+
+    <script type="text/ng-template" id="initiatives-all.html">
+        {{graph.draw('chart_div')}}
+    </script>
+    <script type="text/ng-template" id="initiatives-one.html">
+        <div class="modal-header">
+            <button type="button" class="close" ng-click="close()" aria-hidden="true">×</button>
+            <h3 id="initiative-modal-label">
+                {{initiative.currentTotal/500 | number:0}}% {{initiative.currentTotal}}/50000
+            </h3>
+        </div>
+        <div class="modal-body">
+            <p>{{initiative.name.fi}}</p>
+            <p><a href="{{initiative.url}}">Aloite kansalaisaloite.fi:ssä</a></p>
+            <initiative-chart-single initiative="initiative">
+                <div id="initiative-chart-fulltime" style="width: 530px; height: 300px;"></div>
+            </initiative-chart-single>
+        </div>
+    </script>
+    <script type="text/ng-template" id="initiatives-tooltip-all.html">
+    </script>
+    <script type="text/ng-template" id="initiatives-tooltip-one.html">
+    </script>
+
+
     <a href="https://github.com/fraktio/kannatusilmoitukset-front"><img style="z-index: 500; position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+
     <div id="fb-root"></div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script src="//www.google.com/jsapi"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
-<script src="assets/js/spin.min.js"></script>
-<script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script>
-    var timeParser = function(time) {
-        return function(start, length) {
-            return parseInt(time.substr(start, length), 10);
-        };
-    };
-    var idToUrl = function(id) {
-        return 'https://www.kansalaisaloite.fi/fi/aloite/' + id.match(/\d+$/)[0];
-    };
 
-    var googleDataArray = function(data) {
-        var chartData = [];
-        data = $.map(data, function(initiative, id) {
-            initiative.id = id;
-            initiative.totalSupportCount = $.map(initiative.totalSupportCount, function(count, time) {
-                time = timeParser(time);
-                time = new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
-                return {'time': time, 'count': count};
-            });
-            initiative.totalSupportCount.sort(function(a,b) {
-                return a.time - b.time;
-            });
-            initiative.currentTotal = initiative.totalSupportCount[initiative.totalSupportCount.length-1].count;
-            return initiative;
-        });
-        data.sort(function(b, a) {
-            return a.currentTotal - b.currentTotal;
-        });
-        window.idPos = $.map(data, function(initiative, i) {
-            return [initiative.id, null];
-        });
-        idPos.unshift('Time');
-        var names = $.map(data, function(initiative) {
-            return initiative.name.fi;
-        });
-        names.unshift('Time');
-        chartData.push([]);
-        var timeCount = {};
-        var i;
-        var url;
-        window.dateFullFormatter = new google.visualization.DateFormat({pattern: "dd.MM.yyyy HH:mm:ss"});
-        $.each(data, function(i, initiative) {
-            id = initiative.id;
-            $.each(initiative.totalSupportCount, function(i, count) {
-                time = count.time;
-                count = count.count;
-                if (!timeCount.hasOwnProperty(time)) {
-                    timeCount[time] = Array(idPos.length);
-                    timeCount[time][0] = time;
-                    for (i = 1; i < idPos.length; i++) timeCount[time][i] = null;
-                }
-                timeCount[time][idPos.indexOf(id)] = count;
-                timeCount[time][idPos.indexOf(id)+1] = '<div class="initiative-tooltip"><p><span class="count">' + count + '</span><span class="date">' + dateFullFormatter.formatValue(time) + '</span></p><p class="name">' + initiative.name.fi + '</p></div>';
-            });
-        });
-        chartData = $.map(timeCount, function(counts, time) {
-            return [counts];
-        });
-        chartData.sort(function(a, b) {
-            return a[0] - b[0];
-        });
-        chartData[0] = names;
-        return chartData;
-    };
-    var handle = function(data) {
-        var arrayedData = googleDataArray(data);
-        dataTable = new google.visualization.DataTable();
-        for (var i in arrayedData[0]) {
-            if (i == 0) {
-                dataTable.addColumn('datetime', arrayedData[0][i]);
-                continue;
-            }
-            dataTable.addColumn('number', arrayedData[0][i]);
-            dataTable.addColumn({type:'string',role:'tooltip',p:{html:true}});
-        }
-        arrayedData[0] = null;
-        dataTable.addRows(arrayedData);
-        var wrapper = new google.visualization.ChartWrapper({
-            chartType: 'LineChart',
-            containerId: 'chart_div',
-            dataTable: dataTable
-        });
-        wrapper.setOptions({
-            'backgroundColor': 'whiteSmoke',
-            'chartArea': {
-                'top': 20,
-                'left': 60
-            },
-            'hAxis': {
-                'format': 'dd.MM.yyyy' // dd.MM.yyyy HH:mm
-            },
-            'tooltip': {
-                'isHtml': true
-            }
-        });
-        google.visualization.events.addListener(wrapper, 'select', function(e) {
-            if (wrapper.getChart().getSelection().length < 1) {
-                return;
-            }
-            var id = idPos[wrapper.getChart().getSelection()[0].column];
-
-            _gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-
-            var initiativeData = data[id].totalSupportCount.map(function(count, i) {
-                return [count.time, count.count, true, '<div class="initiative-tooltip"><p><span class="count">' + count.count + '</span><span class="date">' + dateFullFormatter.formatValue(count.time) + '</span></p></div>'];
-            });
-            initiativeData.sort(function(a, b) {
-                return a[0] - b[0];
-            });
-            initiativeData.unshift([new Date(data[id].startDate), 0, false, '<div class="initiative-tooltip"><p><span class="count">0</span><span class="date">' + dateFullFormatter.formatValue(new Date(data[id].startDate)) + '</span></p></div>']);
-
-            $('body').append(
-                '<div class="initiative-details modal hide fade" tabindex="-1" role="dialog" aria-labelledby="initiative-modal-label" aria-hidden="true">' +
-                    '<div class="modal-header">' + 
-                        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
-                        '<h3 id="initiative-modal-label">' +
-                            Math.floor(initiativeData[initiativeData.length-1][1]/50000*100) + '%' +
-                            ' - ' + initiativeData[initiativeData.length-1][1] + '/50000' +
-                        '</h3>' +
-                    '</div>' +
-                    '<div class="modal-body">' +
-                        '<p>' + data[id].name.fi + '</p>' +
-                        '<p><a href="' + idToUrl(id) + '">Aloite kansalaisaloite.fi:ssä</a></p>' +
-                        '<div id="initiative-chart-fulltime" style="width: 530px; height: 300px;"></div>' +
-                    '</div>' +
-                '</div>'
-            );
-            $dialog = $('.initiative-details');
-            $dialog.modal().on('hidden', function() {
-                $dialog.remove();
-            });
-
-            var dataTable = new google.visualization.DataTable();
-            dataTable.addColumn('datetime', 'Aika');
-            dataTable.addColumn('number', data[id].name.fi);
-            dataTable.addColumn({type: 'boolean', role: 'certainty'});
-            dataTable.addColumn({type: 'string', role: 'tooltip',p:{html:true}});
-            dataTable.addRows(initiativeData);
-
-            var modalWrapper = new google.visualization.ChartWrapper({
-                chartType: 'LineChart',
-                containerId: 'initiative-chart-fulltime',
-                dataTable: dataTable
-            });
-            modalWrapper.setOptions({
-                'backgroundColor': 'white',
-                'hAxis': {
-                    'format': 'MM.yyyy',
-                    'minValue': new Date(data[id].startDate),
-                    'maxValue': new Date(data[id].endDate),
-                    'viewWindow': {
-                        'min': new Date(data[id].startDate),
-                        'max': new Date(data[id].endDate)
-                    }
-                },
-                'vAxis': {
-                    'maxValue': 50000,
-                    'viewWindow': {
-                        'max': 50000
-                    },
-                    'gridlines': {
-                        'count': 6
-                    }
-                },
-                'legend': {
-                    'position': 'none'
-                },
-                'chartArea': {
-                    'top': 20,
-                    'left': 60,
-                    'width': 450,
-                    'height': 260
-                },
-                width: 530,
-                height: 300,
-                'tooltip': {
-                    'isHtml': true
-                }
-            });
-            modalWrapper.draw();
-        });
-        wrapper.draw();
-    };
-    google.load('visualization', '1', {packages:['corechart'], callback: function() {
-        $.ajax('initiatives-all.json', {
-            'dataType': 'json',
-            'success': handle,
-            'cache': true
-        });
-    }});
-
-    new Spinner({lines: 9, length: 4, width: 5, radius: 13, corners: 1, rotate: 5, color: '#000', speed: 1, trail: 79, shadow: false, hwaccel: false, className: 'spinner', zIndex: 2e9, top: '200', left: 'auto'}).spin(document.getElementById('chart_div'));
-
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-37909592-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.async = true;
-        ga.src = '//www.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/fi_FI/all.js#xfbml=1";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-</script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="//www.google.com/jsapi"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular-resource.min.js"></script>
+    <script src="/assets/js/kannatusilmoitukset-front.min.js"></script>
 </body></html>

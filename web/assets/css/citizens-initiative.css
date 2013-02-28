@@ -1,0 +1,26 @@
+.google-visualization-tooltip .initiative-tooltip {
+    padding: 10px;
+}
+.google-visualization-tooltip .initiative-tooltip p {
+    margin: 0;
+    padding: 0;
+    max-width: 400px;
+}
+.google-visualization-tooltip .initiative-tooltip .count {
+    font-weight: bold;
+    font-size: 130%;
+    margin: 0 10px 0 0;
+}
+#chart_div svg circle, #chart_div svg path, #chart_div svg > g:nth-of-type(1) > g {
+    cursor: pointer;
+}
+body > .goog-tooltip {
+    display: none;
+}
+.modal {
+    position: absolute;
+}
+.modal .modal-body {
+    max-height: 500px;
+    overflow: hidden;
+}
