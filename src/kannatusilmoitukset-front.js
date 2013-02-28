@@ -7,20 +7,20 @@
     }]);
 
     angular.module('citizens-initiative', ['citizens-initiative-graph', 'ui.bootstrap.dialog'])
-        .config(function($routeProvider, $locationProvider) {
+        .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider
                 .when('/', {
-                    controller: function($scope, $location, $routeParams, Graph) {
+                    controller: ['$scope', '$location', '$routeParams', 'Graph', function($scope, $location, $routeParams, Graph) {
                         Graph.setLocationSetter(function(path) {
                             $location.path(path);
                             $scope.$apply();
                         });
                         $scope.graph = Graph;
-                    },
+                    }],
                     template: document.getElementById('initiatives-all.html').innerHTML
                 })
                 .when('/:id/:pretty', {
-                    controller: function($scope, $location, $routeParams, Data, Graph, $dialog) {
+                    controller: ['$scope', '$location', '$routeParams', 'Data', 'Graph', '$dialog', function($scope, $location, $routeParams, Data, Graph, $dialog) {
                         $scope.id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                         var d = $dialog.dialog({
                             modalFade: true,
@@ -28,7 +28,7 @@
                             resolve: {
                                 id: $scope.id
                             },
-                            controller: function($scope, dialog, id){
+                            controller: ['$scope', 'dialog', 'id', function($scope, dialog, id){
                                 _gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
                                 $scope.id = id;
                                 $scope.data = Data.data;
@@ -55,24 +55,22 @@
                                     dialog.close();
                                 };
                                 $scope.graph = Graph;
-                            }
+                            }]
                         });
                         d.open().then(function() {
                             $location.path('/');
                         });
-                        $scope.show = function() {
-                        };
                         setTimeout(function() {
                             $('.spinner').remove();
                         }, 0);
-                    },
-                    template: '{{show()}}'
+                    }],
+                    template: ' '
                 });
             $locationProvider.html5Mode(true);
-        });
+        }]);
 
     angular.module('citizens-initiative-data', ['ngResource'])
-        .factory('Data', function($resource) {
+        .factory('Data', ['$resource', function($resource) {
             var Data = $resource('/initiatives-all.json').get();
             var cache = null;
 
@@ -151,7 +149,7 @@
                     return chartData;
                 }
             };
-        });
+        }]);
 
     angular.module('citizens-initiative-graph', ['citizens-initiative-data'])
         .directive('initiativeChartSingle', function() {
@@ -162,18 +160,18 @@
                 scope: {
                     initiative: '=initiative'
                 },
-                controller: function($scope, $element, $attrs, Graph) {
+                controller: ['$scope', '$element', '$attrs', 'Graph', function($scope, $element, $attrs, Graph) {
                     $scope.$watch('initiative', function(initiative) {
                         if (!initiative.id) {
                             return;
                         }
                         Graph.drawSingle('initiative-chart-fulltime', initiative);
                     });
-                },
+                }],
                 template: '<div ng-transclude></div>'
             };
         })
-        .factory('Graph', function(Data) {
+        .factory('Graph', ['Data', function(Data) {
             var wrapper = null;
             var locationSetter = null;
             return {
@@ -314,7 +312,7 @@
                     wrapper.draw();
                 }
             };
-        });
+        }]);
 
 
     var initiativeSupportArray = function(initiative) {
