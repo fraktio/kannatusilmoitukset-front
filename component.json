@@ -1,0 +1,7 @@
+{
+  "name": "kannatusilmoitukset-front",
+  "version": "0.0.0",
+  "dependencies": {
+    "spin.js": "~1.2.8"
+  }
+}
