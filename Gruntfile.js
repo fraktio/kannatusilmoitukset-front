@@ -14,6 +14,8 @@
                     src: [
                         'web/assets/bootstrap/js/bootstrap.js',
                         'components/spin.js/spin.js',
+                        'components/angular-bootstrap/src/transition/transition.js',
+                        'components/angular-bootstrap/src/dialog/dialog.js',
                         'src/**/*.js'
                     ],
                     dest: 'web/assets/js/<%= pkg.name %>.js'
@@ -39,19 +41,20 @@
                         jQuery: true,
                         console: true,
                         //module: true,
-                        document: true
+                        document: true,
+                        angular: true
                     }
                 }
             },
             watch: {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint', 'qunit']
+                tasks: ['jshint', 'concat', 'uglify']
             },
             connect: {
                 server: {
                     options: {
                         port: 8000,
-                        base: '.'
+                        base: 'web'
                     }
                 }
             }
@@ -66,6 +69,6 @@
 
         grunt.registerTask('test', ['jshint', 'qunit']);
 
-        grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+        grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
     };
 }());

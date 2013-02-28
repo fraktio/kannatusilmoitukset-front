@@ -2,6 +2,7 @@
   "name": "kannatusilmoitukset-front",
   "version": "0.0.0",
   "dependencies": {
-    "spin.js": "~1.2.8"
+    "spin.js": "~1.2.8",
+    "angular-bootstrap": "~0.1.0"
   }
 }
