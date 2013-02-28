@@ -2,6 +2,4 @@ web/initiatives-all.json
 .idea
 components
 node_modules
-web/assets/js/kannatusilmoitukset-front.js
-web/assets/js/kannatusilmoitukset-front.min.js
 

@@ -14,15 +14,13 @@ A better API for fetching this processed data and the original history of suppor
 
 Redirect all non-static requests to index.htm
 
-Compile kannatusilmoitukset-front.min.js with grunt:
+## Development
 
 - Install _node.js_ and _npm_ (I used [nodeenv](https://github.com/ekalinin/nodeenv))
 - `npm install -g grunt bower`
 - `npm install`
 - `bower install`
 - `grunt`
-
-## Development
 
 Use `grunt watch`. Testing TODO.
 
