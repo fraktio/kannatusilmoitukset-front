@@ -1,3 +1,9 @@
+body {
+    background-image: url('../images/background.png');
+
+    font-family: "Sintony";
+}
+
 .google-visualization-tooltip .initiative-tooltip {
     padding: 10px;
 }
