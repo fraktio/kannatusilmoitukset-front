@@ -1,7 +1,31 @@
 body {
     background-image: url('../images/background.png');
-
     font-family: "Sintony";
+
+    margin-top: 10px;
+}
+
+h1, h3 {
+    font-family: "Tauri";
+    letter-spacing: -2px;
+}
+
+h1 {
+    font-size: 36px;
+    letter-spacing: -2px;
+}
+
+h3 {
+    letter-spacing: -1px;
+}
+
+g text {
+    font-family: "Sintony" !important;
+    font-size: 14px;
+}
+
+.page-header {
+    border-bottom: none;
 }
 
 .google-visualization-tooltip .initiative-tooltip {

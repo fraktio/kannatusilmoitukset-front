@@ -66,7 +66,7 @@
                 }
             },
             watch: {
-                files: ['<%= jshint.files %>'],
+                files: ['<%= jshint.files %>', 'src/assets/**' ],
                 tasks: ['jshint', 'concat', 'uglify', 'copy', 'hashres']
             },
             connect: {
