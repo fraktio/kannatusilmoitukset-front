@@ -6,6 +6,25 @@
         // Project configuration.
         grunt.initConfig({
             pkg:grunt.file.readJSON('package.json'),
+            copy: {
+                dev: {
+                    src: 'src/assets/index.htm',
+                    dest: 'web/index.htm'
+                }
+            },
+            hashres: {
+                options: {
+                    encoding: 'utf8',
+                    fileNameFormat: '${name}.${hash}.${ext}',
+                    renameFiles: true
+                },
+                dist: {
+                    src: [
+                        'web/assets/js/<%= pkg.name %>.min.js'
+                    ],
+                    dest: 'web/index.htm'
+                }
+            },
             concat: {
                 options: {
                     separator: ';'
@@ -66,9 +85,11 @@
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.loadNpmTasks('grunt-contrib-concat');
         grunt.loadNpmTasks('grunt-contrib-connect');
+        grunt.loadNpmTasks('grunt-contrib-copy');
+        grunt.loadNpmTasks('grunt-hashres');
 
         grunt.registerTask('test', ['jshint', 'qunit']);
 
-        grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+        grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'copy', 'hashres']);
     };
 }());
