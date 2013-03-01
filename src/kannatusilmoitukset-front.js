@@ -173,9 +173,6 @@
             var wrapper = null;
             var locationSetter = null;
             return {
-                data: function() {
-                    return Data.data();
-                },
                 setLocationSetter: function(setter) {
                     locationSetter = setter;
                 },
@@ -305,7 +302,7 @@
 
                         wrapper.getChart().setSelection(null);
 
-                        locationSetter('/' + id.match(/\d+$/)[0] + '/');
+                        locationSetter('/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(Data.data[id].name.fi));
                     });
 
                     wrapper.draw();
@@ -313,6 +310,13 @@
             };
         }]);
 
+    var prettyUrlText = function(text) {
+        return text.split(' ').slice(0,5).join(' ')
+                .toLowerCase()
+                .replace(/[äå]/g, 'a')
+                .replace(/ö/g, 'o')
+                .replace(/[^a-z0-9]+/g, '-');
+    };
 
     var initiativeSupportArray = function(initiative) {
         var support = [];
@@ -340,7 +344,7 @@
 
     new Spinner({lines: 9, length: 4, width: 5, radius: 13, corners: 1, rotate: 5, color: '#000', speed: 1, trail: 79, shadow: false, hwaccel: false, className: 'spinner', zIndex: 2e9, top: '200', left: 'auto'}).spin(document.getElementById('chart_div'));
 
-    var _gaq = _gaq || [];
+    window._gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-37909592-1']);
     _gaq.push(['_trackPageview']);
     (function() {
