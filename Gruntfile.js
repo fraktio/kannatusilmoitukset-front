@@ -29,15 +29,25 @@
                 options: {
                     separator: ';'
                 },
-                dist: {
+                clear: {
                     src: [
-                        'web/assets/bootstrap/js/bootstrap.js',
-                        'components/spin.js/spin.js',
                         'components/angular-bootstrap/src/transition/transition.js',
                         'components/angular-bootstrap/src/dialog/dialog.js',
                         'src/**/*.js'
                     ],
                     dest: 'web/assets/js/<%= pkg.name %>.js'
+                },
+                uglified: {
+                    src: [
+                        'components/jquery/jquery.min.js',
+                        'components/underscore/underscore.min.js',
+                        'components/angular/angular.min.js',
+                        'components/angular-resource/angular-resource.min.js',
+                        'web/assets/bootstrap/js/bootstrap.min.js',
+                        'components/spin.js/dist/spin.min.js',
+                        'web/assets/js/<%= pkg.name %>.min.js'
+                    ],
+                    dest: 'web/assets/js/<%= pkg.name %>.min.js'
                 }
             },
             uglify: {
@@ -46,7 +56,7 @@
                 },
                 dist: {
                     files: {
-                        'web/assets/js/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+                        'web/assets/js/<%= pkg.name %>.min.js': ['<%= concat.clear.dest %>']
                     }
                 }
             },
@@ -66,8 +76,8 @@
                 }
             },
             watch: {
-                files: ['<%= jshint.files %>'],
-                tasks: ['jshint', 'concat', 'uglify']
+                files: ['<%= jshint.files %>', 'assets/**'],
+                tasks: ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']
             },
             connect: {
                 server: {
@@ -90,6 +100,6 @@
 
         grunt.registerTask('test', ['jshint', 'qunit']);
 
-        grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'copy', 'hashres']);
+        grunt.registerTask('default', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']);
     };
 }());
