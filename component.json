@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "dependencies": {
     "spin.js": "~1.2.8",
-    "angular-bootstrap": "~0.1.0"
+    "angular-bootstrap": "~0.1.0",
+    "jquery": "~1.9.1",
+    "underscore": "~1.4.4",
+    "angular": "~1.0.5",
+    "angular-resource": "~1.0.5"
   }
 }
