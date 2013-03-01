@@ -67,7 +67,7 @@
             },
             watch: {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint', 'concat', 'uglify']
+                tasks: ['jshint', 'concat', 'uglify', 'copy', 'hashres']
             },
             connect: {
                 server: {
