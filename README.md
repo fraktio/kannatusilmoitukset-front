@@ -17,7 +17,7 @@ Redirect all non-static requests to index.htm
 ## Development
 
 - Install _node.js_ and _npm_ (I used [nodeenv](https://github.com/ekalinin/nodeenv))
-- `npm install -g grunt bower`
+- `npm install -g grunt-cli bower`
 - `npm install`
 - `bower install`
 - `grunt`
