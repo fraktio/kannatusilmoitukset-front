@@ -44,7 +44,6 @@
                                     if (!initiative.hasOwnProperty('support')) {
                                         initiative.id = $scope.id;
                                         initiative.support = initiativeSupportArray(initiative);
-                                        initiative.currentTotal = initiative.support[initiative.support.length-1][1];
                                         initiative.url = idToUrl(initiative.id);
                                     }
 
@@ -71,7 +70,7 @@
 
     angular.module('citizens-initiative-data', ['ngResource'])
         .factory('Data', ['$resource', function($resource) {
-            var Data = $resource('/initiatives-all.json').get();
+            var Data = $resource('/initiatives-sorted-streaked.json').get();
             var cache = null;
 
             return {
@@ -98,7 +97,6 @@
                     data = $.map(data, function(initiative) {
                         if (!initiative.hasOwnProperty('support')) {
                             initiative.support = initiativeSupportArray(initiative);
-                            initiative.currentTotal = initiative.support[initiative.support.length-1][1];
                             initiative.url = idToUrl(initiative.id);
                         }
                         return initiative;
@@ -295,7 +293,8 @@
                         },
                         'tooltip': {
                             'isHtml': true
-                        }
+                        },
+                        'interpolateNulls': true
                     });
 
                     var listener = google.visualization.events.addListener(wrapper, 'select', function(e) {
@@ -322,7 +321,6 @@
             time = new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
             support.push([time, value]);
         });
-        support.sort(function(a,b) {return a[0] - b[0];});
         return support;
     };
 
@@ -353,7 +351,7 @@
     (function(d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
+        js = d.createElement(s); js.id = id; js.async = true;
         js.src = "//connect.facebook.net/fi_FI/all.js#xfbml=1";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
