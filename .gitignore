@@ -1,4 +1,5 @@
 web/initiatives-all.json
+web/initiatives-sorted-streaked.json
 .idea
 components
 node_modules
