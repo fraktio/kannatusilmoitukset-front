@@ -344,7 +344,8 @@
 
     new Spinner({lines: 9, length: 4, width: 5, radius: 13, corners: 1, rotate: 5, color: '#000', speed: 1, trail: 79, shadow: false, hwaccel: false, className: 'spinner', zIndex: 2e9, top: '200', left: 'auto'}).spin(document.getElementById('chart_div'));
 
-    window._gaq = _gaq || [];
+    var _gaq = window._gaq || [];
+    window._gaq = _gaq;
     _gaq.push(['_setAccount', 'UA-37909592-1']);
     _gaq.push(['_trackPageview']);
     (function() {
