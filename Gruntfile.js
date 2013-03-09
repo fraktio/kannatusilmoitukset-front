@@ -8,8 +8,8 @@
             pkg:grunt.file.readJSON('package.json'),
             copy: {
                 dev: {
-                    src: 'src/assets/index.htm',
-                    dest: 'web/index.htm'
+                    src: 'src/assets/index.html',
+                    dest: 'web/index.html'
                 }
             },
             hashres: {
@@ -22,7 +22,7 @@
                     src: [
                         'web/assets/js/<%= pkg.name %>.min.js'
                     ],
-                    dest: 'web/index.htm'
+                    dest: 'web/index.html'
                 }
             },
             concat: {
@@ -39,11 +39,9 @@
                 },
                 uglified: {
                     src: [
-                        'components/jquery/jquery.min.js',
-                        'components/underscore/underscore.min.js',
+                        'components/underscore/underscore-min.js',
                         'components/angular/angular.min.js',
                         'components/angular-resource/angular-resource.min.js',
-                        'web/assets/bootstrap/js/bootstrap.min.js',
                         'components/spin.js/dist/spin.min.js',
                         'web/assets/js/<%= pkg.name %>.min.js'
                     ],
@@ -64,14 +62,41 @@
                 files: ['test/**/*.html']
             },
             jshint: {
-                files: ['Gruntfile.js', 'src/**.js', 'test/**/*.js'],
+                files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
                 options: {
+                    bitwise: true,
+                    camelcase: true,
+                    curly: true,
+                    eqeqeq: true,
+                    forin: true,
+                    immed: true,
+                    indent: 4,
+                    latedef: true,
+                    newcap: true,
+                    noarg: true,
+                    noempty: true,
+                    nonew: true,
+                    plusplus: true,
+                    // quotmark: true,
+                    undef: true,
+                    unused: true,
+                    strict: true,
+                    trailing: true,
+                    maxparams: 3,
+                    maxdepth: 4,
+                    maxstatements: 17, // todo
+                    maxcomplexity: 10,
+                    maxlen: 120,
+
+                    browser: true,
+
                     globals: {
-                        jQuery: true,
-                        console: true,
-                        //module: true,
-                        document: true,
-                        angular: true
+                        _: false,
+                        jQuery: false,
+                        angular: false,
+                        google: false,
+                        Spinner: false,
+                        module: false
                     }
                 }
             },
@@ -89,14 +114,16 @@
             }
         });
 
-        grunt.loadNpmTasks('grunt-contrib-uglify');
-        grunt.loadNpmTasks('grunt-contrib-jshint');
-        grunt.loadNpmTasks('grunt-contrib-qunit');
-        grunt.loadNpmTasks('grunt-contrib-watch');
-        grunt.loadNpmTasks('grunt-contrib-concat');
-        grunt.loadNpmTasks('grunt-contrib-connect');
-        grunt.loadNpmTasks('grunt-contrib-copy');
-        grunt.loadNpmTasks('grunt-hashres');
+        [
+            'grunt-contrib-uglify',
+            'grunt-contrib-jshint',
+            'grunt-contrib-qunit',
+            'grunt-contrib-watch',
+            'grunt-contrib-concat',
+            'grunt-contrib-connect',
+            'grunt-contrib-copy',
+            'grunt-hashres'
+        ].forEach(grunt.loadNpmTasks);
 
         grunt.registerTask('test', ['jshint', 'qunit']);
 
