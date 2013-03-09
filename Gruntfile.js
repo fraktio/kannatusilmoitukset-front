@@ -8,8 +8,8 @@
             pkg:grunt.file.readJSON('package.json'),
             copy: {
                 dev: {
-                    src: 'src/assets/index.htm',
-                    dest: 'web/index.htm'
+                    src: 'src/assets/index.html',
+                    dest: 'web/index.html'
                 }
             },
             hashres: {
@@ -22,7 +22,7 @@
                     src: [
                         'web/assets/js/<%= pkg.name %>.min.js'
                     ],
-                    dest: 'web/index.htm'
+                    dest: 'web/index.html'
                 }
             },
             concat: {
