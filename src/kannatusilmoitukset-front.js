@@ -39,11 +39,32 @@
         };
     };
 
+    var spinner = function(element) {
+        new Spinner({
+            lines: 9,
+            length: 4,
+            width: 5,
+            radius: 13,
+            corners: 1,
+            rotate: 5,
+            color: '#000',
+            speed: 1,
+            trail: 79,
+            shadow: false,
+            hwaccel: false,
+            className: 'spinner',
+            zIndex: 2e9,
+            top: '200',
+            left: 'auto'
+        }).spin(element);
+    };
+
     angular.module('citizens-initiative', ['citizens-initiative-graph', 'ui.bootstrap.dialog'])
         .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider
                 .when('/', {
                     controller: ['$scope', '$location', 'Graph', function($scope, $location, Graph) {
+                        spinner(document.getElementById('chart_div'));
                         Graph.setLocationSetter(function(path) {
                             $location.path(path);
                             $scope.$apply();
@@ -52,42 +73,63 @@
                     }],
                     template: document.getElementById('initiatives-all.html').innerHTML
                 })
-                .when('/:id/:pretty', {
-                    controller: ['$location', '$routeParams', '$dialog',
-                        function($location, $routeParams, $dialog) {
-
-                        var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
-                        var d = $dialog.dialog({
-                            modalFade: true,
-                            template: document.getElementById('initiatives-one.html').innerHTML,
-                            controller: ['$scope', 'Data', 'Graph', function($scope, Data, Graph){
-                                _gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-                                $scope.initiative = {};
-                                Data.withData(function(data) {
-                                    $scope.initiative = fillInitiative(data[id], id);
+                .when('/lista/kannatetuimmat/:num', {
+                    controller: ['$scope', '$routeParams', 'Data', function($scope, $routeParams, Data) {
+                        $scope.num = $routeParams.num;
+                        $scope.initiatives = [];
+                        Data.withData(function(data) {
+                            $scope.initiatives =
+                                _(
+                                    _(data)
+                                        .map(fillInitiative)
+                                        .map(function(initiative) {
+                                            initiative.donePercentage = Math.floor((
+                                                (Date.now() - new Date(initiative.startDate)) /
+                                                    (new Date(initiative.endDate) - new Date(initiative.startDate))
+                                                )*100);
+                                            initiative.url =
+                                                '/' + initiative.id.match(/\d+$/)[0] +
+                                                '/' + prettyUrlText(initiative.name.fi);
+                                            return initiative;
+                                        })
+                                        .filter(function(initiative) {
+                                            return new Date(initiative.endDate) > Date.now();
+                                        })
+                                ).sortBy(function(initiative) {
+                                    return -initiative.currentTotal;
                                 });
-
-                                $scope.close = function() {
-                                    d.close();
-                                };
-                                $scope.graph = Graph;
-                            }]
                         });
-                        d.open().then(function() {
-                            $location.path('/');
-                        });
-                        setTimeout(function() {
-                            // TODO ng-show / ng-class
-                            var elements = document.getElementsByClassName('spinner');
-                            angular.forEach(elements, function(element) {
-                                element.parentNode.removeChild(element);
-                            });
-                        }, 0);
                     }],
-                    template: ' '
+                    template: document.getElementById('list.html').innerHTML
+                })
+                .when('/:id/:pretty', {
+                    controller: ['$routeParams', '$scope', 'Data', 'Graph',
+                        function($routeParams, $scope, Data, Graph) {
+                        var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
+                        _gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
+                        $scope.initiative = {};
+                        Data.withData(function(data) {
+                            $scope.initiative = fillInitiative(data[id], id);
+                        });
+                        $scope.graph = Graph;
+                    }],
+                    template: document.getElementById('initiatives-one.html').innerHTML
                 });
             $locationProvider.html5Mode(true);
-        }]);
+        }])
+        .directive('initiativesNav', function() {
+            return {
+                restrict: 'A',
+                controller: ['$scope', '$location', function($scope, $location) {
+                    $scope.links = [
+                        {href: '/', name: 'Graafi'},
+                        {href: '/lista/kannatetuimmat/50', name: 'Lista'}
+                    ];
+                    $scope.location = $location;
+                }],
+                template: document.getElementById('initiatives-nav.html').innerHTML
+            };
+        });
 
     angular.module('citizens-initiative-data', ['ngResource'])
         .factory('Data', ['$resource', '$filter', function($resource, $filter) {
@@ -257,7 +299,7 @@
                         dataTable: data
                     });
                     chart.setOptions({
-                        'backgroundColor': 'white',
+                        'backgroundColor': 'whiteSmoke',
                         'hAxis': {
                             'format': 'MM.yyyy',
                             'minValue': new Date(initiative.startDate),
@@ -284,11 +326,9 @@
                         'chartArea': {
                             'top': 20,
                             'left': 60,
-                            'width': 450,
-                            'height': 260
+                            'width': '80%',
+                            'height': '80%'
                         },
-                        width: 530,
-                        height: 300,
                         'tooltip': {
                             'isHtml': true
                         }
@@ -324,7 +364,7 @@
                     wrapper.setOptions({
                         'backgroundColor': 'whiteSmoke',
                         'chartArea': {
-                            'top': 20,
+                            'top': 10,
                             'left': 60
                         },
                         'hAxis': {
@@ -359,24 +399,6 @@
     google.load('visualization', '1', {packages:['corechart'], callback:function() {
         angular.bootstrap(document, ['citizens-initiative']);
     }});
-
-    new Spinner({
-        lines: 9,
-        length: 4,
-        width: 5,
-        radius: 13,
-        corners: 1,
-        rotate: 5,
-        color: '#000',
-        speed: 1,
-        trail: 79,
-        shadow: false,
-        hwaccel: false,
-        className: 'spinner',
-        zIndex: 2e9,
-        top: '200',
-        left: 'auto'
-    }).spin(document.getElementById('chart_div'));
 
     var _gaq = window._gaq || [];
     window._gaq = _gaq;

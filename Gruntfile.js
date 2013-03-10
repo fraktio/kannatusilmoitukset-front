@@ -8,8 +8,16 @@
             pkg:grunt.file.readJSON('package.json'),
             copy: {
                 dev: {
-                    src: 'src/assets/index.html',
-                    dest: 'web/index.html'
+                    files: [
+                        {
+                            src: 'src/assets/index.html',
+                            dest: 'web/index.html'
+                        },
+                        {
+                            src: 'src/assets/css/citizens-initiative.css',
+                            dest: 'web/assets/css/citizens-initiative.css'
+                        }
+                    ]
                 }
             },
             hashres: {
@@ -20,7 +28,8 @@
                 },
                 dist: {
                     src: [
-                        'web/assets/js/<%= pkg.name %>.min.js'
+                        'web/assets/js/<%= pkg.name %>.min.js',
+                        'web/assets/css/citizens-initiative.css'
                     ],
                     dest: 'web/index.html'
                 }
@@ -82,7 +91,7 @@
                     unused: true,
                     strict: true,
                     trailing: true,
-                    maxparams: 3,
+                    maxparams: 4,
                     maxdepth: 4,
                     maxstatements: 17, // todo
                     maxcomplexity: 10,
