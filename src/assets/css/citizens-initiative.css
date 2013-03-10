@@ -2,7 +2,7 @@ html {
     overflow-y: scroll;
 }
 body {
-    background-image: url('../../../web/assets/images/background.png');
+    background-image: url('/assets/images/background.png');
     font-family: "Sintony";
 
     margin-top: 10px;
