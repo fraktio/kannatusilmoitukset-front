@@ -61,7 +61,7 @@
                             modalFade: true,
                             template: document.getElementById('initiatives-one.html').innerHTML,
                             controller: ['$scope', 'Data', 'Graph', function($scope, Data, Graph){
-                                _gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
+                                window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
                                 $scope.initiative = {};
                                 Data.withData(function(data) {
                                     $scope.initiative = fillInitiative(data[id], id);
@@ -143,10 +143,11 @@
                     });
                     names.unshift('Time');
                     chartData.push([]);
-                    var timeCount = {};
+                    var timeCount = {}, i, time, index;
                     angular.forEach(data, function(initiative) {
+                        index = idPos.indexOf(initiative.id);
                         angular.forEach(initiative.support, function(count) {
-                            var i, time = count[0];
+                            time = count[0];
                             count = count[1];
 
                             if (!time || !count) {
@@ -160,8 +161,8 @@
                                     timeCount[time][i] = null;
                                 }
                             }
-                            timeCount[time][idPos.indexOf(initiative.id)] = count;
-                            timeCount[time][idPos.indexOf(initiative.id)+1] =
+                            timeCount[time][index] = count;
+                            timeCount[time][index+1] =
                                 '<div class="initiative-tooltip"><p>' +
                                     '<span class="count">' + count + '</span>' +
                                     '<span class="date">' + $filter('date')(time, "dd.MM.yyyy HH:mm:ss") + '</span>' +
@@ -354,12 +355,6 @@
             };
         }]);
 
-
-
-    google.load('visualization', '1', {packages:['corechart'], callback:function() {
-        angular.bootstrap(document, ['citizens-initiative']);
-    }});
-
     new Spinner({
         lines: 9,
         length: 4,
@@ -377,28 +372,5 @@
         top: '200',
         left: 'auto'
     }).spin(document.getElementById('chart_div'));
-
-    var _gaq = window._gaq || [];
-    window._gaq = _gaq;
-    _gaq.push(['_setAccount', 'UA-37909592-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script');
-        ga.async = true;
-        ga.src = '//www.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(ga, s);
-    })();
-    (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {
-            return;
-        }
-        js = d.createElement(s);
-        js.id = id;
-        js.async = true;
-        js.src = "//connect.facebook.net/fi_FI/all.js#xfbml=1";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
 
 }());

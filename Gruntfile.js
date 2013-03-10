@@ -20,9 +20,12 @@
                 },
                 dist: {
                     src: [
-                        'web/assets/js/<%= pkg.name %>.min.js'
+                        'web/assets/js/<%= pkg.name %>.min.js',
+                        'web/assets/js/load.min.js'
                     ],
-                    dest: 'web/index.html'
+                    dest: [
+                        'web/index.html'
+                    ]
                 }
             },
             concat: {
@@ -33,7 +36,7 @@
                     src: [
                         'components/angular-bootstrap/src/transition/transition.js',
                         'components/angular-bootstrap/src/dialog/dialog.js',
-                        'src/**/*.js'
+                        'src/<%= pkg.name %>.js'
                     ],
                     dest: 'web/assets/js/<%= pkg.name %>.js'
                 },
@@ -54,6 +57,10 @@
                 },
                 dist: {
                     files: {
+                        'web/assets/js/load.min.js': [
+                            'components/yepnope/yepnope.js',
+                            'src/load.js'
+                        ],
                         'web/assets/js/<%= pkg.name %>.min.js': ['<%= concat.clear.dest %>']
                     }
                 }
@@ -125,8 +132,12 @@
             'grunt-hashres'
         ].forEach(grunt.loadNpmTasks);
 
+        grunt.registerTask('build-dev', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']);
+
+        grunt.registerTask('build-prod', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']);
+
         grunt.registerTask('test', ['jshint', 'qunit']);
 
-        grunt.registerTask('default', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']);
+        grunt.registerTask('default', ['build-dev']);
     };
 }());
