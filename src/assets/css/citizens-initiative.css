@@ -75,16 +75,19 @@ table {
     height: 3px;
 }
 
+.progress p {
+    display: inline-block;
+    color: #5DB75D;
+    padding: 4px 0 0 5px;
+}
+
 .progress .bar-success p {
+    color: white;
+    display: block;
     margin: 3px 5px 0 0;
     padding: 0;
     text-align: right;
     text-shadow: none;
-}
-
-.bar-low {
-    color: #5DB75D;
-    padding: 2px 0 0 10px;
 }
 
 .table-bordered th, .table-bordered td {
