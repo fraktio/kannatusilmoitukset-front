@@ -91,8 +91,13 @@
                     <div class="clearfix">
                         <div class="progress">
                             <div class="bar bar-success" style="width: {{ initiative.currentTotal/500 }}%;">
-                                <p>{{ initiative.currentTotal }}</p>
+                                <p ng-show="initiative.currentTotal/500 >= 14">
+                                    {{ initiative.currentTotal }}
+                                </p>
                             </div>
+                            <p ng-show="initiative.currentTotal/500 < 14">
+                                {{ initiative.currentTotal }}
+                            </p>
                         </div>
                     </div>
                 </td>
