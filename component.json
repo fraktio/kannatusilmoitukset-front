@@ -6,6 +6,7 @@
     "underscore": "~1.4.4",
     "angular": "~1.0.5",
     "angular-resource": "~1.0.5",
-    "angular-bootstrap": "~0.1.0"
+    "angular-bootstrap": "~0.1.0",
+    "yepnope": "~1.5.4"
   }
 }
