@@ -1,13 +1,21 @@
 (function () {
     "use strict";
 
+    var timeParser = function(time) {
+        return function(start, length) {
+            return parseInt(time.substr(start, length), 10);
+        };
+    };
+    var stringToDate = _.memoize(function(time) {
+        time = timeParser(time);
+        return new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
+    });
     var initiativeSupportArray = function(initiative) {
-        var support = [];
-        angular.forEach(initiative.totalSupportCount, function(value, time) {
-            time = timeParser(time);
-            time = new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
-            support.push([time, value]);
-        });
+        /*jshint forin:false */
+        var time, support = [];
+        for (time in initiative.totalSupportCount) {
+            support.push([stringToDate(time.substr(0, 11)), initiative.totalSupportCount[time]]);
+        }
         return support;
     };
     var idToUrl = function(id) {
@@ -33,11 +41,6 @@
             .replace(/[^a-z0-9]+/g, '-');
     };
 
-    var timeParser = function(time) {
-        return function(start, length) {
-            return parseInt(time.substr(start, length), 10);
-        };
-    };
 
     var spinner = function(element) {
         new Spinner({
@@ -184,17 +187,13 @@
                         return initiative.name.fi;
                     });
                     names.unshift('Time');
-                    chartData.push([]);
-                    var timeCount = {}, i, time, index;
+
+                    var timeCount = {}, i, j, time, index, endDate;
                     angular.forEach(data, function(initiative) {
                         index = idPos.indexOf(initiative.id);
-                        angular.forEach(initiative.support, function(count) {
-                            time = count[0];
-                            count = count[1];
-
-                            if (!time || !count) {
-                                return;
-                            }
+                        endDate = new Date(initiative.endDate);
+                        for (j = 0; j < initiative.support.length; j += 1) {
+                            time = initiative.support[j][0];
 
                             if (!timeCount.hasOwnProperty(time)) {
                                 timeCount[time] = new Array(idPos.length);
@@ -203,19 +202,19 @@
                                     timeCount[time][i] = null;
                                 }
                             }
-                            timeCount[time][index] = count;
+                            timeCount[time][index] = initiative.support[j][1];
                             timeCount[time][index+1] =
                                 '<div class="initiative-tooltip"><p>' +
-                                    '<span class="count">' + count + '</span>' +
+                                    '<span class="count">' + initiative.support[j][1] + '</span>' +
                                     '<span class="date">' + $filter('date')(time, "dd.MM.yyyy HH:mm:ss") + '</span>' +
                                 '</p><p class="name">' + initiative.name.fi + '</p></div>';
-                        });
+                        }
                     });
                     chartData = _.values(timeCount);
                     chartData.sort(function(a, b) {
                         return a[0] - b[0];
                     });
-                    chartData[0] = names;
+                    chartData.unshift(names);
 
                     return {chart: chartData, idPos: idPos};
                 }
