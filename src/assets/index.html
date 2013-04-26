@@ -86,7 +86,7 @@
             <tbody>
             <tr ng-repeat="(i, initiative) in initiatives|limitTo:num">
                 <td>{{ i + 1 }}</td>
-                <td><a href="{{ initiative.url }}">{{ initiative.name.fi }}</a></td>
+                <td><a href="{{ initiative.localUrl }}">{{ initiative.name.fi }}</a></td>
                 <td>
                     <div class="clearfix">
                         <div class="progress">

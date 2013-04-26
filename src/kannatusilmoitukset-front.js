@@ -87,7 +87,7 @@
                                                 (Date.now() - new Date(initiative.startDate)) /
                                                     (new Date(initiative.endDate) - new Date(initiative.startDate))
                                                 )*100);
-                                            initiative.url =
+                                            initiative.localUrl =
                                                 '/' + initiative.id.match(/\d+$/)[0] +
                                                 '/' + prettyUrlText(initiative.name.fi);
                                             return initiative;
