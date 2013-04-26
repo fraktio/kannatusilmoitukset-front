@@ -90,6 +90,8 @@
                                             initiative.url =
                                                 '/' + initiative.id.match(/\d+$/)[0] +
                                                 '/' + prettyUrlText(initiative.name.fi);
+                                            initiative.totalPercentage = Math.min(100, initiative.currentTotal / 500);
+
                                             return initiative;
                                         })
                                         .filter(function(initiative) {
