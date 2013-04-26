@@ -70,6 +70,23 @@
                             $scope.$apply();
                         });
                         $scope.graph = Graph;
+                        $scope.limits = {num: 15, offset: 0};
+                    }],
+                    template: document.getElementById('initiatives-all.html').innerHTML
+                })
+                .when('/graafi/kannatetuimmat/:num/alkaen/:offset', {
+                    controller: ['$scope', '$location', 'Graph', '$routeParams',
+                        function($scope, $location, Graph, $routeParams) {
+                        spinner(document.getElementById('chart_div'));
+                        Graph.setLocationSetter(function(path) {
+                            $location.path(path);
+                            $scope.$apply();
+                        });
+                        $scope.graph = Graph;
+                        $scope.limits = {
+                            num: parseInt($routeParams.num, 10),
+                            offset: parseInt($routeParams.offset, 10)
+                        };
                     }],
                     template: document.getElementById('initiatives-all.html').innerHTML
                 })
@@ -78,6 +95,9 @@
                         $scope.num = $routeParams.num;
                         $scope.initiatives = [];
                         Data.withData(function(data) {
+                            $scope.header = {
+                                fi: 'Kannatetuimmat käynnissäolevat aloitteet'
+                            };
                             $scope.initiatives =
                                 _(
                                     _(data)
@@ -96,6 +116,38 @@
                                         })
                                         .filter(function(initiative) {
                                             return new Date(initiative.endDate) > Date.now();
+                                        })
+                                ).sortBy(function(initiative) {
+                                    return -initiative.currentTotal;
+                                });
+                        });
+                    }],
+                    template: document.getElementById('list.html').innerHTML
+                })
+                .when('/lista/paattyneet/:num', {
+                    controller: ['$scope', '$routeParams', 'Data', function($scope, $routeParams, Data) {
+                        $scope.num = $routeParams.num;
+                        $scope.initiatives = [];
+                        Data.withData(function(data) {
+                            $scope.header = {
+                                fi: 'Kannatetuimmat päättyneet aloitteet'
+                            };
+                            $scope.initiatives =
+                                _(
+                                    _(data)
+                                        .map(fillInitiative)
+                                        .map(function(initiative) {
+                                            initiative.donePercentage = Math.floor((
+                                                (Date.now() - new Date(initiative.startDate)) /
+                                                    (new Date(initiative.endDate) - new Date(initiative.startDate))
+                                                )*100);
+                                            initiative.url =
+                                                '/' + initiative.id.match(/\d+$/)[0] +
+                                                    '/' + prettyUrlText(initiative.name.fi);
+                                            return initiative;
+                                        })
+                                        .filter(function(initiative) {
+                                            return new Date(initiative.endDate) <= Date.now();
                                         })
                                 ).sortBy(function(initiative) {
                                     return -initiative.currentTotal;
@@ -124,8 +176,14 @@
                 restrict: 'A',
                 controller: ['$scope', '$location', function($scope, $location) {
                     $scope.links = [
-                        {href: '/', name: 'Graafi'},
-                        {href: '/lista/kannatetuimmat/50', name: 'Lista'}
+                        {href: '/', name: '1-15'},
+                        {href: '/graafi/kannatetuimmat/15/alkaen/15', name: '16-30'},
+                        {href: '/graafi/kannatetuimmat/15/alkaen/30', name: '31-45'},
+                        {href: '/graafi/kannatetuimmat/15/alkaen/45', name: '46-60'},
+                        {href: '/graafi/kannatetuimmat/15/alkaen/60', name: '61-75'},
+                        {href: '/graafi/kannatetuimmat/15/alkaen/75', name: '76-90'},
+                        {href: '/lista/kannatetuimmat/50', name: 'Lista'},
+                        {href: '/lista/paattyneet/50', name: 'Päättyneet'}
                     ];
                     $scope.location = $location;
                 }],
@@ -167,17 +225,24 @@
                 withData: function(listener) {
                     listeners.push(listener);
                 },
-                googleDataArray: function() {
+                googleDataArray: function(num, offset) {
                     if (!(Data instanceof Resource)) {
                         return null;
                     }
                     var idPos;
                     var data = _.map(Data, fillInitiative);
 
+                    data = _(data).filter(function(initiative) {
+                        return new Date(initiative.endDate) > Date.now();
+                    });
+
                     var chartData = [];
                     data.sort(function(b, a) {
                         return a.currentTotal - b.currentTotal;
                     });
+
+                    data = data.slice(offset, offset+num);
+
                     idPos = _.reduce(data, function(idPos, initiative) {
                         return idPos.concat([initiative.id, null]);
                     }, []);
@@ -339,12 +404,12 @@
 
                     chart.draw();
                 },
-                draw: function(containerId) {
+                draw: function(containerId, num, offset) {
                     var data;
                     if (document.getElementById(containerId).childElementCount > 1) {
                         return;
                     }
-                    data = Data.googleDataArray();
+                    data = Data.googleDataArray(num, offset);
                     if (!data) {
                         return;
                     }

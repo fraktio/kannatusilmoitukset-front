@@ -100,7 +100,7 @@
                     trailing: true,
                     maxparams: 4,
                     maxdepth: 4,
-                    maxstatements: 17, // todo
+                    maxstatements: 20, // todo
                     maxcomplexity: 10,
                     maxlen: 120,
 
