@@ -90,12 +90,12 @@
                 <td>
                     <div class="clearfix">
                         <div class="progress">
-                            <div class="bar bar-success" style="width: {{ initiative.currentTotal/500 }}%;">
-                                <p ng-show="initiative.currentTotal/500 >= 14">
+                            <div class="bar bar-success" style="width: {{ initiative.totalPercentage }}%;">
+                                <p ng-show="initiative.totalPercentage >= 14">
                                     {{ initiative.currentTotal }}
                                 </p>
                             </div>
-                            <p ng-show="initiative.currentTotal/500 < 14">
+                            <p ng-show="initiative.totalPercentage < 14">
                                 {{ initiative.currentTotal }}
                             </p>
                         </div>
