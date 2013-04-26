@@ -72,7 +72,7 @@
         </div>
     </script>
     <script type="text/ng-template" id="list.html">
-        <h3>Kannatetuimmat käynnissäolevat aloitteet</h3>
+        <h3>{{ header.fi }}</h3>
 
         <table class="table table-bordered table-hover">
             <thead>
@@ -116,7 +116,7 @@
     </script>
     <script type="text/ng-template" id="initiatives-all.html">
         <div id="chart_div" style="margin: 0 auto -170px; width: 100%; height: 800px">Lasketaan kannatusilmoituksia...</div>
-        {{graph.draw('chart_div')}}
+        {{graph.draw('chart_div', limits.num, limits.offset)}}
     </script>
     <script type="text/ng-template" id="initiatives-one.html">
         <h3>
