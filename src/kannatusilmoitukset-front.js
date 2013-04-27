@@ -10,17 +10,23 @@
         });
         return support;
     };
-    var idToUrl = function(id) {
-        return 'https://www.kansalaisaloite.fi/fi/aloite/' + id.match(/\d+$/)[0];
-    };
     var fillInitiative = function(initiative, id) {
         if (typeof(initiative) !== 'object') {
             return null;
         }
         if (!initiative.hasOwnProperty('support')) {
-            initiative.id = id;
-            initiative.support = initiativeSupportArray(initiative);
-            initiative.url = idToUrl(id);
+            initiative = _(initiative).extend({
+                id: id,
+                support: initiativeSupportArray(initiative),
+                totalPercentage: Math.min(100, initiative.currentTotal / 500),
+                url: 'https://www.kansalaisaloite.fi/fi/aloite/' + id.match(/\d+$/)[0],
+                donePercentage: Math.floor((
+                    (Date.now() - new Date(initiative.startDate)) /
+                        (new Date(initiative.endDate) - new Date(initiative.startDate))
+                    )*100
+                ),
+                localUrl: '/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(initiative.name.fi)
+            });
         }
         return initiative;
     };
@@ -78,24 +84,37 @@
                         $scope.num = $routeParams.num;
                         $scope.initiatives = [];
                         Data.withData(function(data) {
+                            $scope.header = {
+                                fi: 'Kannatetuimmat käynnissäolevat aloitteet'
+                            };
                             $scope.initiatives =
                                 _(
                                     _(data)
                                         .map(fillInitiative)
-                                        .map(function(initiative) {
-                                            initiative.donePercentage = Math.floor((
-                                                (Date.now() - new Date(initiative.startDate)) /
-                                                    (new Date(initiative.endDate) - new Date(initiative.startDate))
-                                                )*100);
-                                            initiative.localUrl =
-                                                '/' + initiative.id.match(/\d+$/)[0] +
-                                                '/' + prettyUrlText(initiative.name.fi);
-                                            initiative.totalPercentage = Math.min(100, initiative.currentTotal / 500);
-
-                                            return initiative;
-                                        })
                                         .filter(function(initiative) {
                                             return new Date(initiative.endDate) > Date.now();
+                                        })
+                                ).sortBy(function(initiative) {
+                                    return -initiative.currentTotal;
+                                });
+                        });
+                    }],
+                    template: document.getElementById('list.html').innerHTML
+                })
+                .when('/lista/paattyneet/:num', {
+                    controller: ['$scope', '$routeParams', 'Data', function($scope, $routeParams, Data) {
+                        $scope.num = $routeParams.num;
+                        $scope.initiatives = [];
+                        Data.withData(function(data) {
+                            $scope.header = {
+                                fi: 'Kannatetuimmat päättyneet aloitteet'
+                            };
+                            $scope.initiatives =
+                                _(
+                                    _(data)
+                                        .map(fillInitiative)
+                                        .filter(function(initiative) {
+                                            return new Date(initiative.endDate) <= Date.now();
                                         })
                                 ).sortBy(function(initiative) {
                                     return -initiative.currentTotal;
@@ -125,7 +144,8 @@
                 controller: ['$scope', '$location', function($scope, $location) {
                     $scope.links = [
                         {href: '/', name: 'Graafi'},
-                        {href: '/lista/kannatetuimmat/50', name: 'Lista'}
+                        {href: '/lista/kannatetuimmat/50', name: 'Lista'},
+                        {href: '/lista/paattyneet/50', name: 'Päättyneet'}
                     ];
                     $scope.location = $location;
                 }],
