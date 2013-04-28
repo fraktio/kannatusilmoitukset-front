@@ -20,15 +20,33 @@ http://kannatusilmoitukset.fi/initiatives-sorted-streaked.json
 
 ## Installation
 
-Redirect all non-static requests to index.htm
+Generate the static page and assets as described under _Development_.
+
+Fetch a snapshot of the data:
+
+    curl http://kannatusilmoitukset.fi/initiatives-sorted-streaked.json > web/initiatives-sorted-streaked.json
+
+Redirect all non-static requests to index.html, nginx example:
+
+    server {
+        server_name kannatusilmoitukset.tunk.io;
+        root /home/pkjedi/workspace/kannatusilmoitukset-front/web;
+        index index.html;
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
 
 ## Development
 
-- Install _node.js_ and _npm_ (I used [nodeenv](https://github.com/ekalinin/nodeenv))
-- `npm install -g grunt-cli bower`
-- `npm install`
-- `bower install`
-- `grunt`
+Requires _node.js_ and _npm_ (I used [nodeenv](https://github.com/ekalinin/nodeenv))
 
-Use `grunt watch`. Testing TODO.
+    npm install -g grunt-cli bower # install grunt and bower
+    git clone git@github.com:fraktio/kannatusilmoitukset-front.git # clone the repository
+    cd kannatusilmoitukset-front
+    npm install # install node dependencies (grunt modules)
+    bower install # install client js dependencies
+    grunt # run the grunt default task, which generates the actual page
+
+Use `grunt watch` to build on changes. Testing TODO.
 
