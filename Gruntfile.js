@@ -43,8 +43,7 @@
                 },
                 clear: {
                     src: [
-                        'components/angular-bootstrap/src/transition/transition.js',
-                        'components/angular-bootstrap/src/dialog/dialog.js',
+                        'components/angular-bootstrap/ui-bootstrap.js',
                         'src/<%= pkg.name %>.js'
                     ],
                     dest: 'web/assets/js/<%= pkg.name %>.js'
