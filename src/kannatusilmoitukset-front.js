@@ -314,10 +314,10 @@
                         },
                         'vAxis': {
                             'minValue': 0,
-                            'maxValue': 50000,
+                            'maxValue': Math.max(50000, initiative.currentTotal+10000),
                             'viewWindow': {
                                 'min': 0,
-                                'max': 50000
+                                'max': Math.max(50000, initiative.currentTotal+10000)
                             },
                             'gridlines': {
                                 'count': 6
