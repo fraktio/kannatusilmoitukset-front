@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fi" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Sintony:400,700">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Tauri">
+  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css">
+  <style>
+      html, body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          overflow: hidden;
+      }
+      g text {
+          font-family: "Sintony" !important;
+          font-size: 14px;
+      }
+.google-visualization-tooltip .initiative-tooltip {
+    padding: 10px;
+}
+.google-visualization-tooltip .initiative-tooltip p {
+    margin: 0;
+    padding: 0;
+    max-width: 400px;
+}
+.google-visualization-tooltip .initiative-tooltip .count {
+    font-weight: bold;
+    font-size: 130%;
+    margin: 0 10px 0 0;
+}
+
+  </style>
+</head>
+<body>
+    <div id="chart"></div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+<script src="//www.google.com/jsapi"></script>
+<script>
+$(function() {
+    var initiativeId = (window.location.search.match(/[?&]initiative=(\d+)/)||[,null])[1];
+    var bgColor = (window.location.search.match(/[?&]bgColor=(\w+)/)||[,'white'])[1];
+
+    var chartElem = document.getElementById('chart');
+    chartElem.style.height = '' + window.innerHeight + 'px';
+ 
+    var timeParser = function(time) {
+        return function(start, length) {
+            return parseInt(time.substr(start, length), 10);
+        };
+    };
+
+   var initiativeSupportArray = function(initiative) {
+        var support = [];
+        $.each(initiative.totalSupportCount, function(time, value) {
+            time = timeParser(time);
+            time = new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
+            support.push([time, value]);
+        });
+        return support;
+    };
+    var fillInitiative = function(initiative) {
+        initiative.support = initiativeSupportArray(initiative);
+        return initiative;
+    };
+    google.load('visualization', '1', {packages:['corechart'], callback:function() {
+        $.getJSON('/initiatives/' + initiativeId + '.json', function(data) {
+            initiative = fillInitiative(data);
+
+            var draw = function() {
+                containerId = 'chart';
+
+                var startDate = new Date(initiative.startDate);
+
+                var data = new google.visualization.DataTable();
+                data.addColumn('datetime', 'Time');
+                data.addColumn('number', initiative.name.fi);
+                data.addColumn({type:'boolean',role:'certainty'});
+                data.addColumn({type:'string',role:'tooltip',p:{html:true}});
+
+                var rows = [];
+                $.each(initiative.support, function(key, value) {
+                    if (!value.hasOwnProperty('length') || value.length !== 2) {
+                        return;
+                    }
+                    var val = value.slice(0);
+                    val.push(true);
+                    val.push(
+                        '<div class="initiative-tooltip"><p>' +
+                            '<span class="count">' + value[1] + '</span>' +
+                            '<span class="date">' + value[0] + '</span>' +
+                        '</p></div>'
+                    );
+                    rows.push(val);
+                });
+
+                if (rows.length < 1) {
+                    return;
+                }
+
+                rows.unshift([
+                    startDate,
+                    0,
+                    false,
+                    '<div class="initiative-tooltip"><p>' +
+                        '<span class="count">0</span>' +
+                        '<span class="date">' + startDate + '</span>' +
+                    '</p></div>'
+                ]);
+
+                data.addRows(rows);
+
+                var chart = new google.visualization.ChartWrapper({
+                    chartType: 'LineChart',
+                    containerId: containerId,
+                    dataTable: data
+                });
+                chart.setOptions({
+                    'backgroundColor': bgColor,
+                    'hAxis': {
+                        'format': 'MM.yyyy',
+                        'minValue': new Date(initiative.startDate),
+                        'maxValue': new Date(initiative.endDate),
+                        'viewWindow': {
+                            'min': new Date(initiative.startDate),
+                            'max': new Date(initiative.endDate)
+                        }
+                    },
+                    'vAxis': {
+                        'minValue': 0,
+                        'maxValue': Math.max(50000, initiative.currentTotal+10000),
+                        'viewWindow': {
+                            'min': 0,
+                            'max': Math.max(50000, initiative.currentTotal+10000)
+                        },
+                        'gridlines': {
+                            'count': 6
+                        }
+                    },
+                    'legend': {
+                        'position': 'none'
+                    },
+                    'chartArea': {
+                        'top': 10,
+                        'left': 60,
+                        'width': window.innerWidth - 65,
+                        'height': window.innerHeight - 40 
+                    },
+                    'tooltip': {
+                        'isHtml': true
+                    }
+                });
+
+                chart.draw();
+            };
+            draw();
+            $(window).resize(function() {
+                chartElem.style.height = '' + window.innerHeight + 'px';
+                draw();
+
+            });
+        });
+    }});
+});
+</script>
+</body>
+</html>
