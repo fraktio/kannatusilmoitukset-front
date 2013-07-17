@@ -79,6 +79,7 @@
             <tr>
                 <th>Sija</th>
                 <th>Aloite</th>
+                <th>Kahden viikon nousu</th>
                 <th>Kannatusilmoitukset</th>
                 <th>Keräysaika</th>
             </tr>
@@ -90,12 +91,26 @@
                 <td>
                     <div class="clearfix">
                         <div class="progress">
+                            <div class="bar bar-success" style="width: {{ initiative.twoWeekSupport / fastest * 100 }}%;">
+                                <p ng-show="initiative.twoWeekSupport / fastest >= 0.15">
+                                    {{ initiative.twoWeekSupport }}
+                                </p>
+                            </div>
+                            <p ng-show="initiative.twoWeekSupport / fastest < 0.15">
+                                {{ initiative.twoWeekSupport }}
+                            </p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="clearfix">
+                        <div class="progress">
                             <div class="bar bar-success" style="width: {{ initiative.totalPercentage }}%;">
-                                <p ng-show="initiative.totalPercentage >= 14">
+                                <p ng-show="initiative.totalPercentage >= 15">
                                     {{ initiative.currentTotal }}
                                 </p>
                             </div>
-                            <p ng-show="initiative.totalPercentage < 14">
+                            <p ng-show="initiative.totalPercentage < 15">
                                 {{ initiative.currentTotal }}
                             </p>
                         </div>

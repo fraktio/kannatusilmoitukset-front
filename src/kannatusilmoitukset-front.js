@@ -10,6 +10,14 @@
         });
         return support;
     };
+    var timeSupport = function(initiative, time) {
+        var i = initiative.support.length - 1;
+        var last = initiative.support[i];
+        while (i > 0 && (last[0] - initiative.support[i][0]) < time) {
+            i -= 1;
+        }
+        return last[1] - initiative.support[i][1];
+    };
     var fillInitiative = function(initiative, id) {
         if (typeof(initiative) !== 'object') {
             return null;
@@ -27,8 +35,14 @@
                 ),
                 localUrl: '/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(initiative.name.fi)
             });
+            initiative.twoWeekSupport = timeSupport(initiative, 1000*60*60*24*14);
         }
         return initiative;
+    };
+    var fastestTwoWeek = function (initiatives) {
+        return _.max(_(initiatives).map(function(initiative) {
+            return initiative.twoWeekSupport;
+        }));
     };
 
     var prettyUrlText = function(text) {
@@ -69,6 +83,29 @@
         .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider
                 .when('/', {
+                    controller: ['$scope', 'Data', function($scope, Data) {
+                        $scope.initiatives = [];
+                        Data.withData(function(data) {
+                            $scope.num = 100;
+                            $scope.header = {
+                                fi: 'Viimeisten kahden viikon aikana kannatetuimmat aloitteet'
+                            };
+                            $scope.initiatives =
+                                _(
+                                    _(data)
+                                        .map(fillInitiative)
+                                        .filter(function(initiative) {
+                                            return new Date(initiative.endDate) > Date.now();
+                                        })
+                                ).sortBy(function(initiative) {
+                                    return -initiative.twoWeekSupport;
+                                });
+                            $scope.fastest = fastestTwoWeek($scope.initiatives);
+                        });
+                    }],
+                    template: document.getElementById('list.html').innerHTML
+                })
+                .when('/graafi', {
                     controller: ['$scope', '$location', 'Graph', function($scope, $location, Graph) {
                         spinner(document.getElementById('chart_div'));
                         Graph.setLocationSetter(function(path) {
@@ -85,7 +122,7 @@
                         $scope.initiatives = [];
                         Data.withData(function(data) {
                             $scope.header = {
-                                fi: 'Kannatetuimmat käynnissäolevat aloitteet'
+                                fi: 'Koko keräysaikanaan kannatetuimmat aloitteet'
                             };
                             $scope.initiatives =
                                 _(
@@ -97,6 +134,7 @@
                                 ).sortBy(function(initiative) {
                                     return -initiative.currentTotal;
                                 });
+                            $scope.fastest = fastestTwoWeek($scope.initiatives);
                         });
                     }],
                     template: document.getElementById('list.html').innerHTML
@@ -119,6 +157,7 @@
                                 ).sortBy(function(initiative) {
                                     return -initiative.currentTotal;
                                 });
+                            $scope.fastest = fastestTwoWeek($scope.initiatives);
                         });
                     }],
                     template: document.getElementById('list.html').innerHTML
@@ -143,9 +182,10 @@
                 restrict: 'A',
                 controller: ['$scope', '$location', function($scope, $location) {
                     $scope.links = [
-                        {href: '/', name: 'Graafi'},
-                        {href: '/lista/kannatetuimmat/50', name: 'Lista'},
-                        {href: '/lista/paattyneet/50', name: 'Päättyneet'}
+                        {href: '/', name: 'Nousijat'},
+                        {href: '/lista/kannatetuimmat/100', name: 'Kannatetuimmat'},
+                        {href: '/lista/paattyneet/100', name: 'Päättyneet'},
+                        {href: '/graafi', name: 'Graafi'}
                     ];
                     $scope.location = $location;
                 }],
