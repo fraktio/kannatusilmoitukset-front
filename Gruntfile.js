@@ -43,17 +43,17 @@
                 },
                 clear: {
                     src: [
-                        'components/angular-bootstrap/ui-bootstrap.js',
+                        'bower_components/angular-bootstrap/ui-bootstrap.js',
                         'src/<%= pkg.name %>.js'
                     ],
                     dest: 'web/assets/js/<%= pkg.name %>.js'
                 },
                 uglified: {
                     src: [
-                        'components/underscore/underscore-min.js',
-                        'components/angular/angular.min.js',
-                        'components/angular-resource/angular-resource.min.js',
-                        'components/spin.js/dist/spin.min.js',
+                        'bower_components/underscore/underscore-min.js',
+                        'bower_components/angular/angular.min.js',
+                        'bower_components/angular-resource/angular-resource.min.js',
+                        'bower_components/spin.js/dist/spin.min.js',
                         'web/assets/js/<%= pkg.name %>.min.js'
                     ],
                     dest: 'web/assets/js/<%= pkg.name %>.min.js'
@@ -66,7 +66,7 @@
                 dist: {
                     files: {
                         'web/assets/js/load.min.js': [
-                            'components/yepnope/yepnope.js',
+                            'bower_components/yepnope/yepnope.js',
                             'src/load.js'
                         ],
                         'web/assets/js/<%= pkg.name %>.min.js': ['<%= concat.clear.dest %>']
