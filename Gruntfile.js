@@ -52,6 +52,7 @@
                     src: [
                         'bower_components/underscore/underscore-min.js',
                         'bower_components/angular/angular.min.js',
+                        'bower_components/angular-route/angular-route.min.js',
                         'bower_components/angular-resource/angular-resource.min.js',
                         'bower_components/spin.js/dist/spin.min.js',
                         'web/assets/js/<%= pkg.name %>.min.js'

@@ -33,7 +33,7 @@
         return last[1] - initiative.support[i][1];
     };
     var fillInitiative = function(initiative, id) {
-        if (typeof(initiative) !== 'object') {
+        if (typeof initiative !== 'object') {
             return null;
         }
         if (!initiative.hasOwnProperty('support')) {
@@ -94,7 +94,7 @@
         }).spin(element);
     };
 
-    angular.module('citizens-initiative', ['citizens-initiative-graph', 'ui.bootstrap.dialog'])
+    angular.module('citizens-initiative', ['citizens-initiative-graph', 'ngRoute'])
         .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider
                 .when('/', {
@@ -105,16 +105,14 @@
                             $scope.header = {
                                 fi: 'Viimeisten kahden viikon aikana kannatetuimmat aloitteet'
                             };
-                            $scope.initiatives =
-                                _(
-                                    _(data)
-                                        .map(fillInitiative)
-                                        .filter(function(initiative) {
-                                            return new Date(initiative.endDate) > Date.now();
-                                        })
-                                ).sortBy(function(initiative) {
+                            $scope.initiatives = _.chain(data)
+                                .filter(function(initiative) {
+                                    return initiative && new Date(initiative.endDate) > Date.now();
+                                })
+                                .sortBy(function(initiative) {
                                     return -initiative.twoWeekSupport;
-                                });
+                                })
+                                .value();
                             $scope.fastest = fastestTwoWeek($scope.initiatives);
                         });
                     }],
@@ -127,7 +125,7 @@
                             $location.path(path);
                             $scope.$apply();
                         });
-                        $scope.graph = Graph;
+                        Graph.drawWithData('chart_div');
                     }],
                     template: document.getElementById('initiatives-all.html').innerHTML
                 })
@@ -139,16 +137,14 @@
                             $scope.header = {
                                 fi: 'Koko keräysaikanaan kannatetuimmat aloitteet'
                             };
-                            $scope.initiatives =
-                                _(
-                                    _(data)
-                                        .map(fillInitiative)
-                                        .filter(function(initiative) {
-                                            return new Date(initiative.endDate) > Date.now();
-                                        })
-                                ).sortBy(function(initiative) {
+                            $scope.initiatives = _.chain(data)
+                                .filter(function(initiative) {
+                                    return new Date(initiative.endDate) > Date.now();
+                                })
+                                .sortBy(function(initiative) {
                                     return -initiative.currentTotal;
-                                });
+                                })
+                                .value();
                             $scope.fastest = fastestTwoWeek($scope.initiatives);
                         });
                     }],
@@ -162,16 +158,14 @@
                             $scope.header = {
                                 fi: 'Kannatetuimmat päättyneet aloitteet'
                             };
-                            $scope.initiatives =
-                                _(
-                                    _(data)
-                                        .map(fillInitiative)
-                                        .filter(function(initiative) {
-                                            return new Date(initiative.endDate) <= Date.now();
-                                        })
-                                ).sortBy(function(initiative) {
+                            $scope.initiatives = _.chain(data)
+                                .filter(function(initiative) {
+                                    return new Date(initiative.endDate) <= Date.now();
+                                })
+                                .sortBy(function(initiative) {
                                     return -initiative.currentTotal;
-                                });
+                                })
+                                .value();
                             $scope.fastest = fastestTwoWeek($scope.initiatives);
                         });
                     }],
@@ -184,7 +178,7 @@
                         window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
                         $scope.initiative = {};
                         Data.withData(function(data) {
-                            $scope.initiative = fillInitiative(data[id], id);
+                            $scope.initiative = _(data).find(function(initiative) { return initiative.id === id; });
                         });
                         $scope.graph = Graph;
                     }],
@@ -211,69 +205,61 @@
     angular.module('citizens-initiative-data', ['ngResource'])
         .factory('Data', ['$resource', '$filter', function($resource, $filter) {
             var Resource = $resource('/initiatives-sorted-streaked.json');
-            var Data = null;
 
-            var listeners = {
-                listeners: [],
-                push: function(listener) {
-                    this.listeners.push(listener);
-                    return this.check();
-                },
-                check: function() {
-                    if (!(Data instanceof Resource)) {
-                        return this;
-                    }
-
-                    var listener;
-                    while ((listener = this.listeners.pop()) !== undefined) {
-                        listener(Data);
-                    }
-
-                    return this;
-                }
-            };
-
-            Resource.get({}, function(data) {
-                Data = data;
-                listeners.check();
+            var data = null;
+            var Data = Resource.get({}, function() {
+                data = _(angular.copy(Data))
+                    .map(function(initiative, key){
+                        if (!_.isObject(initiative) || key === '$promise') {
+                            return null;
+                        }
+                        return fillInitiative(initiative, key);
+                    }).filter(_.identity);
             });
 
-            return {
-                withData: function(listener) {
-                    listeners.push(listener);
-                },
-                googleDataArray: function() {
-                    if (!(Data instanceof Resource)) {
-                        return null;
-                    }
-                    var idPos;
-                    var data = _.map(Data, fillInitiative);
+            var formIdPos = function(initiatives) {
+                var idPos = _.chain(initiatives)
+                    .map(function(initiative) {
+                        return [initiative.id, null];
+                    })
+                    .flatten()
+                    .value();
+                idPos.unshift('Time');
+                return idPos;
+            };
 
-                    var chartData = [];
-                    data.sort(function(b, a) {
-                        return a.currentTotal - b.currentTotal;
+            var formNames = function(initiatives) {
+                var names = _.map(initiatives, function(initiative) {
+                    return initiative.name.fi;
+                });
+                names.unshift('Time');
+                return names;
+            };
+
+            return {
+                withData: function(cb) {
+                    Data.$promise.then(function() {
+                        cb(data);
                     });
-                    idPos = _.reduce(data, function(idPos, initiative) {
-                        return idPos.concat([initiative.id, null]);
-                    }, []);
-                    idPos.unshift('Time');
-                    var names = _.map(data, function(initiative) {
-                        return initiative.name.fi;
+                },
+                googleDataArray: function(data) {
+                    var initiatives = _(angular.copy(data)).sortBy(function(initiative) {
+                        return -initiative.currentTotal;
                     });
-                    names.unshift('Time');
-                    chartData.push([]);
-                    var timeCount = new Array(180), i, j, time, index;
-                    for (i = 0; i < 180; i += 1) {
-                        timeCount[i] = new Array(idPos.length);
-                        timeCount[i][0] = new Date(Date.now() - (179-i)*24*60*60*1000);
-                        for (j = 1; j < idPos.length; j += 1) {
-                            timeCount[i][j] = null;
+                    var idPos = formIdPos(initiatives);
+
+                    var dailySupports = new Array(180);
+                    for (var i = 0; i < 180; i += 1) {
+                        dailySupports[i] = new Array(idPos.length);
+                        dailySupports[i][0] = new Date(Date.now() - (179-i)*24*60*60*1000);
+                        for (var j = 1; j < idPos.length; j += 1) {
+                            dailySupports[i][j] = null;
                         }
                     }
-                    angular.forEach(data, function(initiative) {
-                        index = idPos.indexOf(initiative.id);
+                    angular.forEach(initiatives, function(initiative) {
+                        var index = idPos.indexOf(initiative.id);
                         angular.forEach(initiative.dailySupport, function(count) {
-                            time = count[0];
+                            var time = count[0];
                             count = count[1];
 
                             if (!time || !count) {
@@ -286,19 +272,19 @@
                                 return;
                             }
 
-                            timeCount[179 - daysBefore][index] = count;
-                            timeCount[179 - daysBefore][index+1] =
+                            dailySupports[179 - daysBefore][index] = count;
+                            dailySupports[179 - daysBefore][index+1] =
                                 '<div class="initiative-tooltip"><p>' +
                                     '<span class="count">' + count + '</span>' +
                                     '<span class="date">' + $filter('date')(time, "dd.MM.yyyy") + '</span>' +
                                 '</p><p class="name">' + initiative.name.fi + '</p></div>';
                         });
                     });
-                    chartData = _.values(timeCount);
+                    var chartData = _.values(dailySupports);
                     chartData.sort(function(a, b) {
                         return a[0] - b[0];
                     });
-                    chartData[0] = names;
+                    chartData[0] = formNames(initiatives);
 
                     return {chart: chartData, idPos: idPos};
                 }
@@ -328,7 +314,7 @@
         .factory('Graph', ['Data', '$filter', function(Data, $filter) {
             var wrapper = null;
             var locationSetter = null;
-            return {
+            var Graph = {
                 setLocationSetter: function(setter) {
                     locationSetter = setter;
                 },
@@ -420,15 +406,17 @@
 
                     chart.draw();
                 },
-                draw: function(containerId) {
-                    var data;
+                drawWithData: function(containerId) {
+                    Data.withData(function(data) {
+                        Graph.draw(data, containerId);
+                    });
+                },
+                draw: function(data, containerId) {
                     if (document.getElementById(containerId).childElementCount > 1) {
                         return;
                     }
-                    data = Data.googleDataArray();
-                    if (!data) {
-                        return;
-                    }
+
+                    data = Data.googleDataArray(data);
 
                     var dataTable = new google.visualization.DataTable();
                     dataTable.addColumn('datetime', data.chart[0][0]);
@@ -476,5 +464,6 @@
                     wrapper.draw();
                 }
             };
+            return Graph;
         }]);
 }());
