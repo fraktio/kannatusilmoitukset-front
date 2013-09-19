@@ -123,7 +123,6 @@
                         spinner(document.getElementById('chart_div'));
                         Graph.setLocationSetter(function(path) {
                             $location.path(path);
-                            $scope.$apply();
                         });
                         Graph.drawWithData('chart_div');
                     }],
@@ -457,7 +456,12 @@
                         wrapper.getChart().setSelection(null);
 
                         Data.withData(function(data) {
-                            locationSetter('/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(data[id].name.fi));
+                            locationSetter(
+                                '/' + id.match(/\d+$/)[0] + '/' +
+                                prettyUrlText(
+                                    _(data).find(function(initiative) { return initiative.id === id; }).name.fi
+                                )
+                            );
                         });
                     });
 
