@@ -10,6 +10,20 @@
         });
         return support;
     };
+
+    var initiativeDailySupportArray = function(initiative) {
+        return _.chain(initiative.totalSupportCount)
+            .map(function(value, time) {
+                time = timeParser(time);
+                time = (new Date(time(0, 4), time(4, 2) - 1, time(6, 2))).getTime();
+                return [time, value];
+            })
+            .uniq(true, function(value) {
+                return value[0];
+            })
+            .value();
+    };
+
     var timeSupport = function(initiative, time) {
         var i = initiative.support.length - 1;
         var last = initiative.support[i];
@@ -26,6 +40,7 @@
             initiative = _(initiative).extend({
                 id: id,
                 support: initiativeSupportArray(initiative),
+                dailySupport: initiativeDailySupportArray(initiative),
                 totalPercentage: Math.min(100, initiative.currentTotal / 500),
                 url: 'https://www.kansalaisaloite.fi/fi/aloite/' + id.match(/\d+$/)[0],
                 donePercentage: Math.floor((
@@ -185,7 +200,7 @@
                         {href: '/', name: 'Nousijat'},
                         {href: '/lista/kannatetuimmat/100', name: 'Kannatetuimmat'},
                         {href: '/lista/paattyneet/100', name: 'Päättyneet'},
-                        {href: '/graafi', name: 'Graafi'}
+                        {href: '/graafi', name: 'Graafi (6kk)'}
                     ];
                     $scope.location = $location;
                 }],
@@ -247,10 +262,17 @@
                     });
                     names.unshift('Time');
                     chartData.push([]);
-                    var timeCount = {}, i, time, index;
+                    var timeCount = new Array(180), i, j, time, index;
+                    for (i = 0; i < 180; i += 1) {
+                        timeCount[i] = new Array(idPos.length);
+                        timeCount[i][0] = new Date(Date.now() - (179-i)*24*60*60*1000);
+                        for (j = 1; j < idPos.length; j += 1) {
+                            timeCount[i][j] = null;
+                        }
+                    }
                     angular.forEach(data, function(initiative) {
                         index = idPos.indexOf(initiative.id);
-                        angular.forEach(initiative.support, function(count) {
+                        angular.forEach(initiative.dailySupport, function(count) {
                             time = count[0];
                             count = count[1];
 
@@ -258,18 +280,17 @@
                                 return;
                             }
 
-                            if (!timeCount.hasOwnProperty(time)) {
-                                timeCount[time] = new Array(idPos.length);
-                                timeCount[time][0] = time;
-                                for (i = 1; i < idPos.length; i += 1) {
-                                    timeCount[time][i] = null;
-                                }
+                            var daysBefore = Math.floor((Date.now() - time)/(24*60*60*1000));
+
+                            if (daysBefore > 179) {
+                                return;
                             }
-                            timeCount[time][index] = count;
-                            timeCount[time][index+1] =
+
+                            timeCount[179 - daysBefore][index] = count;
+                            timeCount[179 - daysBefore][index+1] =
                                 '<div class="initiative-tooltip"><p>' +
                                     '<span class="count">' + count + '</span>' +
-                                    '<span class="date">' + $filter('date')(time, "dd.MM.yyyy HH:mm:ss") + '</span>' +
+                                    '<span class="date">' + $filter('date')(time, "dd.MM.yyyy") + '</span>' +
                                 '</p><p class="name">' + initiative.name.fi + '</p></div>';
                         });
                     });
