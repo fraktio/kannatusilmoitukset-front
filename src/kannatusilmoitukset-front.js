@@ -243,11 +243,11 @@
                 },
                 googleDataArray: function(data) {
                     var initiatives = _.chain(angular.copy(data))
-                        .sortBy(function(initiative) {
-                            return -initiative.currentTotal;
-                        })
                         .filter(function(initiative) {
                             return new Date(initiative.endDate) > Date.now();
+                        })
+                        .sortBy(function(initiative) {
+                            return -initiative.currentTotal;
                         })
                         .value();
 
@@ -448,6 +448,15 @@
                             'format': 'MM.yyyy'
                         },
                         'vAxis': {
+                            'maxValue': 100000,
+                            'ticks': [
+                                {v: 100, f: '100'},
+                                {v: 1000, f: '1000'},
+                                {v: 10000, f: '10000'},
+                                {v: 50000, f: '50000'},
+                                {v: 100000, f: '100000'}
+                            ],
+                            'baseline': 50,
                             'logScale': true
                         },
                         'tooltip': {
