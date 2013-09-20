@@ -1,4 +1,5 @@
 html {
+    min-width: 600px;
     overflow-y: scroll;
 }
 body {
@@ -9,7 +10,6 @@ body {
 }
 
 h1, h3 {
-    font-family: "Tauri";
     letter-spacing: -2px;
 }
 
@@ -28,6 +28,7 @@ g text {
 }
 
 .page-header {
+    margin: 10px 0 10px 0;
     border-bottom: none;
 }
 
@@ -98,3 +99,12 @@ table {
 .navbar {
     margin-bottom: 10px;
 }
+
+#fb-root {
+    display: none;
+}
+
+.fb_iframe_widget, .fb_iframe_widget span, .fb_iframe_widget span iframe[style] {
+    width: 100% !important;
+}
+
