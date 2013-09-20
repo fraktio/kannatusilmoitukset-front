@@ -108,6 +108,14 @@ table {
     width: 100% !important;
 }
 
-.statistics.weekday {
+.statistics {
+    margin-top: 25px;
+}
+
+.statistics h3 {
+    text-align: center;
+}
+
+.statistics .weekday, .statistics .hour {
     height: 300px;
 }
