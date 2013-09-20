@@ -242,9 +242,15 @@
                     });
                 },
                 googleDataArray: function(data) {
-                    var initiatives = _(angular.copy(data)).sortBy(function(initiative) {
-                        return -initiative.currentTotal;
-                    });
+                    var initiatives = _.chain(angular.copy(data))
+                        .sortBy(function(initiative) {
+                            return -initiative.currentTotal;
+                        })
+                        .filter(function(initiative) {
+                            return new Date(initiative.endDate) > Date.now();
+                        })
+                        .value();
+
                     var idPos = formIdPos(initiatives);
 
                     var dailySupports = new Array(180);
@@ -436,10 +442,13 @@
                         'backgroundColor': 'whiteSmoke',
                         'chartArea': {
                             'top': 10,
-                            'left': 60
+                            'left': 65
                         },
                         'hAxis': {
-                            'format': 'dd.MM.yyyy' // dd.MM.yyyy HH:mm
+                            'format': 'MM.yyyy'
+                        },
+                        'vAxis': {
+                            'logScale': true
                         },
                         'tooltip': {
                             'isHtml': true
