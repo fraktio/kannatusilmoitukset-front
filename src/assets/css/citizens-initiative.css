@@ -108,3 +108,6 @@ table {
     width: 100% !important;
 }
 
+.statistics.weekday {
+    height: 300px;
+}

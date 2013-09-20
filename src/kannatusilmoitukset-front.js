@@ -182,6 +182,42 @@
                         $scope.graph = Graph;
                     }],
                     template: document.getElementById('initiatives-one.html').innerHTML
+                })
+                .when('/tilastot', {
+                    controller: ['Data', function(Data) {
+                        Data.withData(function(initiatives) {
+                            yepnope({
+                                load: [
+                                    'http://cdn.oesmith.co.uk/morris-0.4.3.min.css',
+                                    '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
+                                    '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
+                                    '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'
+                                ],
+                                complete: function() {
+                                    new Morris.Donut({
+                                        element: $('.statistics.weekday'),
+                                        data: _(initiatives).reduce(function(data, initiative) {
+                                            _(initiative.support).each(function(value, index, list) {
+                                                if (index !== 0) {
+                                                    data[value[0].getDay()].value += value[1] - list[index-1][1];
+                                                }
+                                            });
+                                            return data;
+                                        }, [
+                                            {label: 'Sunnuntai', value: 0},
+                                            {label: 'Maanantai', value: 0},
+                                            {label: 'Tiistai', value: 0},
+                                            {label: 'Keskiviikko', value: 0},
+                                            {label: 'Torstai', value: 0},
+                                            {label: 'Perjantai', value: 0},
+                                            {label: 'Lauantai', value: 0}
+                                        ])
+                                    });
+                                }
+                            });
+                        });
+                    }],
+                    template: document.getElementById('statistics.html').innerHTML
                 });
             $locationProvider.html5Mode(true);
         }])
