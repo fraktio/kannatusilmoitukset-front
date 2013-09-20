@@ -231,7 +231,7 @@
                             if (_([window.jQuery, window.Raphael, window.Morris]).some(_.isUndefined)) {
                                 yepnope({
                                     load: [
-                                        'http://cdn.oesmith.co.uk/morris-0.4.3.min.css',
+                                        '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.css',
                                         '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
                                         '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
                                         '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'
