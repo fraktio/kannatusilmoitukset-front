@@ -1,0 +1,96 @@
+<script type="text/ng-template" id="initiatives-nav.html">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <ul class="nav">
+                <li ng-repeat="link in links" ng-class="{active: link.href == location.path()}">
+                    <a href="{{ link.href }}">{{ link.name }}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="list.html">
+    <h3>{{ header.fi }}</h3>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Aloite</th>
+            <th>Kahden viikon nousu</th>
+            <th>Kannatus&shy;ilmoitukset</th>
+            <th>Keräysaika</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="(i, initiative) in initiatives|limitTo:num">
+            <td>{{ i + 1 }}</td>
+            <td><a href="{{ initiative.localUrl }}">{{ initiative.name.fi }}</a></td>
+            <td>
+                <div class="clearfix">
+                    <div class="progress">
+                        <div class="bar bar-success" style="width: {{ initiative.twoWeekSupport / fastest * 100 }}%;">
+                            <p ng-show="initiative.twoWeekSupport / fastest >= 0.15">
+                                {{ initiative.twoWeekSupport }}
+                            </p>
+                        </div>
+                        <p ng-show="initiative.twoWeekSupport / fastest < 0.15">
+                            {{ initiative.twoWeekSupport }}
+                        </p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="clearfix">
+                    <div class="progress">
+                        <div class="bar bar-success" style="width: {{ initiative.totalPercentage }}%;">
+                            <p ng-show="initiative.totalPercentage >= 15">
+                                {{ initiative.currentTotal }}
+                            </p>
+                        </div>
+                        <p ng-show="initiative.totalPercentage < 15">
+                            {{ initiative.currentTotal }}
+                        </p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="clearfix">
+                    <div class="aika progress">
+                        <div class="bar" ng-class="{'bar-warning': initiative.donePercentage > 70 && initiative.donePercentage < 85, 'bar-danger': initiative.donePercentage >= 85}" style="width: {{ initiative.donePercentage }}%;"></div>
+                    </div>
+                    <span class="pull-left">{{ initiative.startDate | date:'dd.MM.yyyy' }}</span>
+                    <span class="pull-right">{{ initiative.endDate | date:'dd.MM.yyyy' }}</span>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</script>
+<script type="text/ng-template" id="initiatives-all.html">
+    <div id="chart_div" style="margin: 0 auto -170px; width: 100%; height: 800px">Lasketaan kannatusilmoituksia...</div>
+</script>
+<script type="text/ng-template" id="initiatives-one.html">
+    <h3>
+        {{initiative.currentTotal/500 | number:0}}% {{initiative.currentTotal}}/50000
+    </h3>
+    <p>{{initiative.name.fi}}</p>
+    <p><a href="{{initiative.url}}">Aloite kansalaisaloite.fi:ssä</a></p>
+    <initiative-chart-single initiative="initiative">
+        <div id="initiative-chart-fulltime" style="width: 100%; height: 400px;"></div>
+    </initiative-chart-single>
+</script>
+<script type="text/ng-template" id="statistics.html">
+    <div class="statistics">
+        <div class="row">
+            <div class="span5">
+                <h3>Aktiivisimmat viikonpäivät</h3>
+                <div class="weekday"></div>
+            </div>
+            <div class="span6">
+                <h3>Aktiivisimmat vuorokaudenajat</h3>
+                <div class="hour"></div>
+            </div>
+        </div>
+    </div>
+</script>

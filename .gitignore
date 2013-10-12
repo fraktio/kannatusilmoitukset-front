@@ -1,10 +1,6 @@
-web/index.html
-web/initiatives-all.json
-web/initiatives-sorted-streaked.json
-web/assets/js
-web/assets/css
 .idea
 components
 bower_components
 node_modules
-
+temp/
+web/

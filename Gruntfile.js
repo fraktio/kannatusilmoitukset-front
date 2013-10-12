@@ -1,82 +1,13 @@
 (function () {
     "use strict";
 
+    var _ = require('underscore');
+
     module.exports = function (grunt) {
 
         // Project configuration.
         grunt.initConfig({
             pkg:grunt.file.readJSON('package.json'),
-            copy: {
-                dev: {
-                    files: [
-                        {
-                            src: 'src/assets/index.html',
-                            dest: 'web/index.html'
-                        },
-                        {
-                            src: 'src/assets/css/citizens-initiative.css',
-                            dest: 'web/assets/css/citizens-initiative.css'
-                        }
-                    ]
-                }
-            },
-            hashres: {
-                options: {
-                    encoding: 'utf8',
-                    fileNameFormat: '${name}.${hash}.${ext}',
-                    renameFiles: true
-                },
-                dist: {
-                    src: [
-                        'web/assets/js/<%= pkg.name %>.min.js',
-                        'web/assets/js/load.min.js',
-                        'web/assets/css/citizens-initiative.css'
-                    ],
-                    dest: [
-                        'web/index.html'
-                    ]
-                }
-            },
-            concat: {
-                options: {
-                    separator: ';'
-                },
-                clear: {
-                    src: [
-                        'bower_components/angular-bootstrap/ui-bootstrap.js',
-                        'src/<%= pkg.name %>.js'
-                    ],
-                    dest: 'web/assets/js/<%= pkg.name %>.js'
-                },
-                uglified: {
-                    src: [
-                        'bower_components/underscore/underscore-min.js',
-                        'bower_components/angular/angular.min.js',
-                        'bower_components/angular-route/angular-route.min.js',
-                        'bower_components/angular-resource/angular-resource.min.js',
-                        'bower_components/spin.js/dist/spin.min.js',
-                        'web/assets/js/<%= pkg.name %>.min.js'
-                    ],
-                    dest: 'web/assets/js/<%= pkg.name %>.min.js'
-                }
-            },
-            uglify: {
-                options: {
-                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-                },
-                dist: {
-                    files: {
-                        'web/assets/js/load.min.js': [
-                            'bower_components/yepnope/yepnope.js',
-                            'src/load.js'
-                        ],
-                        'web/assets/js/<%= pkg.name %>.min.js': ['<%= concat.clear.dest %>']
-                    }
-                }
-            },
-            qunit: {
-                files: ['test/**/*.html']
-            },
             jshint: {
                 files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
                 options: {
@@ -116,17 +47,92 @@
                     }
                 }
             },
-            watch: {
-                files: ['<%= jshint.files %>', 'src/assets/**'],
-                tasks: ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']
+            concat: {
+                options: {
+                    separator: ';'
+                },
+                clear: {
+                    src: 'src/**/*.js',
+                    dest: 'temp/kannatusilmoitukset.js'
+                },
+                uglified: {
+                    src: [
+                        'bower_components/yepnope/yepnope.js',
+                        'bower_components/underscore/underscore-min.js',
+                        'bower_components/angular/angular.min.js',
+                        'bower_components/angular-route/angular-route.min.js',
+                        'bower_components/angular-resource/angular-resource.min.js',
+                        'bower_components/spin.js/dist/spin.min.js',
+                        'temp/**/*.js'
+                    ],
+                    dest: 'temp/kannatusilmoitukset.min.js'
+                }
             },
-            connect: {
-                server: {
-                    options: {
-                        port: 8000,
-                        base: 'web'
+            copy: {
+                dev: {
+                    files: [
+                        {
+                            expand: true,
+                            cwd: 'temp/',
+                            src: '*.{js,html,css}',
+                            dest: 'web/'
+                        }
+                    ]
+                }
+            },
+
+            uglify: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+                },
+                dist: {
+                    files: {
+                        'temp/kannatusilmoitukset.min.js': ['<%= concat.clear.dest %>']
                     }
                 }
+            },
+
+            template: {
+                default: {
+                    src: 'src/index.hb',
+                    dest: 'temp/index.html',
+                    variables: {
+                        scripts: grunt.file.expand('src/**/*.js').map(function(name) {
+                            return _.last(name.split('/'));
+                        })
+                    }
+                }
+            },
+
+            less: {
+                default: {
+                    expand: true,
+                    cwd: 'src/',
+                    src: '**/*.less',
+                    dest: 'temp/',
+                    ext: '.css'
+                }
+            },
+
+            hashres: {
+                options: {
+                    encoding: 'utf8',
+                    fileNameFormat: '${name}.${hash}.${ext}',
+                    renameFiles: true
+                },
+                dist: {
+                    src: [
+                        'temp/**/*.{js,css}'
+                    ],
+                    dest: [
+                        'temp/index.html'
+                    ]
+                }
+            },
+
+            watch: {
+                files: ['Gruntfile.js', 'src/**'],
+                tasks: ['build-dev']
             }
         });
 
@@ -138,12 +144,14 @@
             'grunt-contrib-concat',
             'grunt-contrib-connect',
             'grunt-contrib-copy',
-            'grunt-hashres'
+            'grunt-contrib-less',
+            'grunt-hashres',
+            'grunt-templater'
         ].forEach(grunt.loadNpmTasks);
 
-        grunt.registerTask('build-dev', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']);
+        grunt.registerTask('build-dev', ['concat:clear', 'uglify', 'concat:uglified', 'template', 'less', 'hashres', 'copy']);
 
-        grunt.registerTask('build-prod', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'copy', 'hashres']);
+        grunt.registerTask('build-prod', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'template', 'less', 'hashres', 'copy']);
 
         grunt.registerTask('test', ['jshint', 'qunit']);
 
