@@ -95,7 +95,9 @@
     };
 
     angular.module('citizens-initiative', ['citizens-initiative-graph', 'ngRoute'])
-        .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+        .config(['$routeProvider', '$locationProvider', '$compileProvider',
+            function($routeProvider, $locationProvider, $compileProvider) {
+            $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
             $routeProvider
                 .when('/', {
                     controller: ['$scope', 'Data', function($scope, Data) {
@@ -171,13 +173,20 @@
                     template: document.getElementById('list.html').innerHTML
                 })
                 .when('/:id/:pretty', {
-                    controller: ['$routeParams', '$scope', 'Data', 'Graph',
-                        function($routeParams, $scope, Data, Graph) {
+                    controller: ['$routeParams', '$scope', 'Data', 'Graph', '$filter',
+                        function($routeParams, $scope, Data, Graph, $filter) {
                         var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                         window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
                         $scope.initiative = {};
                         Data.withData(function(data) {
                             $scope.initiative = _(data).find(function(initiative) { return initiative.id === id; });
+
+                            $scope.initiative.dailySupportCsv = encodeURIComponent(
+                                _($scope.initiative.dailySupport).map(function(daily) {
+                                    daily[0] = '"' + $filter('date')(new Date(daily[0]), 'dd.MM.yyyy') + '"';
+                                    return daily.join(',');
+                                }).join('\n')
+                            );
                         });
                         $scope.graph = Graph;
                     }],
