@@ -53,7 +53,6 @@
                         'bower_components/underscore/underscore-min.js',
                         'bower_components/angular/angular.min.js',
                         'bower_components/angular-route/angular-route.min.js',
-                        'bower_components/angular-resource/angular-resource.min.js',
                         'bower_components/spin.js/dist/spin.min.js',
                         'temp/**/*.js'
                     ],
@@ -129,10 +128,8 @@
         [
             'grunt-contrib-uglify',
             'grunt-contrib-jshint',
-            'grunt-contrib-qunit',
             'grunt-contrib-watch',
             'grunt-contrib-concat',
-            'grunt-contrib-connect',
             'grunt-contrib-copy',
             'grunt-contrib-less',
             'grunt-contrib-clean',

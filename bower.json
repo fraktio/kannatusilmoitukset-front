@@ -2,12 +2,11 @@
   "name": "kannatusilmoitukset-front",
   "version": "0.0.0",
   "dependencies": {
-    "spin.js": "~1.2.8",
     "underscore": "~1.4.4",
-    "angular": "1.2.0-rc.2",
-    "angular-resource": "1.2.0-rc.2",
-    "angular-bootstrap": "0.6.0",
     "yepnope": "~1.5.4",
-    "angular-route": "~1.2.0-rc.2"
+    "angular": "1.2.0-rc.2",
+    "angular-bootstrap": "0.6.0",
+    "angular-route": "1.2.0-rc.2",
+    "spin.js": "~1.2.8"
   }
 }
