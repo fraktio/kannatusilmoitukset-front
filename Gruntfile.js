@@ -61,24 +61,22 @@
                 }
             },
             copy: {
-                'default': {
+                temp: {
                     files: [
                         {
                             expand: true,
                             cwd: 'src/',
                             src: '**/*.html',
-                            dest: 'web/'
-                        },
+                            dest: 'temp/'
+                        }
+                    ]
+                },
+                web: {
+                    files: [
                         {
                             expand: true,
                             cwd: 'temp/',
-                            src: '**/*.{html,css}',
-                            dest: 'web/'
-                        },
-                        {
-                            expand: true,
-                            cwd: 'temp/',
-                            src: '**/*.min.*.js',
+                            src: '**/*',
                             dest: 'web/'
                         }
                     ]
@@ -92,17 +90,6 @@
                 dist: {
                     files: {
                         'temp/kannatusilmoitukset.min.js': ['src/**/*.js']
-                    }
-                }
-            },
-
-            template: {
-                'default': {
-                    src: 'src/index.hb',
-                    dest: 'temp/index.html',
-                    variables: function() {
-                        return {
-                        };
                     }
                 }
             },
@@ -149,13 +136,12 @@
             'grunt-contrib-copy',
             'grunt-contrib-less',
             'grunt-contrib-clean',
-            'grunt-hashres',
-            'grunt-templater'
+            'grunt-hashres'
         ].forEach(grunt.loadNpmTasks);
 
         grunt.registerTask(
             'build',
-            ['clean', 'jshint', 'uglify', 'concat:uglified', 'less', 'template', 'hashres', 'copy']
+            ['clean', 'jshint', 'uglify', 'concat:uglified', 'less', 'copy:temp', 'hashres', 'copy:web']
         );
 
         grunt.registerTask('default', ['build']);
