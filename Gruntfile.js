@@ -98,7 +98,7 @@
                     unused: true,
                     strict: true,
                     trailing: true,
-                    maxparams: 5,
+                    maxparams: 4,
                     maxdepth: 4,
                     maxstatements: 17, // todo
                     maxcomplexity: 10,
