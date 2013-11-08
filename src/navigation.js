@@ -1,5 +1,7 @@
-/* global angular, _ */
+/* global angular */
 (function() {
+    'use strict';
+
     angular.module('navigation', [])
         .directive('initiativesNav', function() {
             return {
@@ -14,7 +16,7 @@
                     ];
                     $scope.location = $location;
                 }],
-                template: document.getElementById('initiatives-nav.html').innerHTML
+                templateUrl: '/templates/initiatives-nav.html'
             };
         });
 }());

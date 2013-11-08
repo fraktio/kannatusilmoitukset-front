@@ -16,6 +16,6 @@
     "grunt-jinja": "~0.3.0",
     "grunt-templater": "0.0.4-1",
     "handlebars": "~1.0.12",
-    "underscore": "~1.5.2"
+    "grunt-contrib-clean": "~0.5.0"
   }
 }

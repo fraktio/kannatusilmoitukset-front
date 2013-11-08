@@ -1,33 +1,32 @@
-/* global angular, _ */
+/* global angular, _, google */
 (function() {
-    angular.module('lists', ['ngRoute'])
+    'use strict';
+
+    var prettyUrlText = function(text) {
+        return text.split(' ').slice(0,5).join(' ')
+            .toLowerCase()
+            .replace(/[äå]/g, 'a')
+            .replace(/ö/g, 'o')
+            .replace(/[^a-z0-9]+/g, '-');
+    };
+
+    angular.module('graph', ['ngRoute', 'spinner', 'data', 'chartapi'])
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/graafi', {
-                    controller: ['$scope', '$location', 'Graph', function($scope, $location, Graph) {
-                        spinner(document.getElementById('chart_div'));
-                        Graph.setLocationSetter(function(path) {
-                            $location.path(path);
-                        });
-                        Graph.drawWithData('chart_div');
-                    }],
-                    template: document.getElementById('initiatives-all.html').innerHTML
+                    controller: ['$scope', '$location', 'Graph', 'spinner',
+                        function($scope, $location, Graph, spinner) {
+                            spinner(document.getElementById('chart_div'));
+                            Graph.setLocationSetter(function(path) {
+                                $location.path(path);
+                            });
+                            Graph.drawWithData('chart_div');
+                        }
+                    ],
+                    templateUrl: '/templates/initiatives-all.html'
                 });
         }])
-        .factory('Data', ['$resource', '$filter', function($resource, $filter) {
-            var Resource = $resource('/initiatives-sorted-streaked.json');
-
-            var data = null;
-            var Data = Resource.get({}, function() {
-                data = _(angular.copy(Data))
-                    .map(function(initiative, key){
-                        if (!_.isObject(initiative) || key === '$promise') {
-                            return null;
-                        }
-                        return fillInitiative(initiative, key);
-                    }).filter(_.identity);
-            });
-
+        .factory('GraphData', ['$filter', function($filter) {
             var formIdPos = function(initiatives) {
                 var idPos = _.chain(initiatives)
                     .map(function(initiative) {
@@ -48,11 +47,6 @@
             };
 
             return {
-                withData: function(cb) {
-                    Data.$promise.then(function() {
-                        cb(data);
-                    });
-                },
                 googleDataArray: function(data) {
                     var initiatives = _.chain(angular.copy(data))
                         .filter(function(initiative) {
@@ -107,7 +101,7 @@
                 }
             };
         }])
-        .factory('Graph', ['Data', '$filter', function(Data, $filter) {
+        .factory('Graph', ['Data', 'GraphData', 'CoreCharts', function(Data, GraphData, CoreCharts) {
             var wrapper = null;
             var locationSetter = null;
             var Graph = {
@@ -116,8 +110,10 @@
                 },
 
                 drawWithData: function(containerId) {
-                    Data.withData(function(data) {
-                        Graph.draw(data, containerId);
+                    Data.then(function(data) {
+                        CoreCharts.then(function() {
+                            Graph.draw(data, containerId);
+                        });
                     });
                 },
                 draw: function(data, containerId) {
@@ -125,7 +121,7 @@
                         return;
                     }
 
-                    data = Data.googleDataArray(data);
+                    data = GraphData.googleDataArray(data);
 
                     var dataTable = new google.visualization.DataTable();
                     dataTable.addColumn('datetime', data.chart[0][0]);
@@ -177,7 +173,7 @@
 
                         wrapper.getChart().setSelection(null);
 
-                        Data.withData(function(data) {
+                        Data.then(function(data) {
                             locationSetter(
                                 '/' + id.match(/\d+$/)[0] + '/' +
                                     prettyUrlText(

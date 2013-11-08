@@ -1,12 +1,13 @@
-/* global angular, _ */
+/* global angular, _, yepnope, Morris, window, jQuery */
 (function() {
-    angular.module('lists', ['ngRoute'])
+    'use strict';
+
+    angular.module('statistics', ['ngRoute', 'data'])
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/tilastot', {
                     controller: ['$scope', 'Data', function($scope, Data) {
-                        /* global yepnope, jQuery, Morris */
-                        Data.withData(function(initiatives) {
+                        Data.then(function(initiatives) {
                             var drawStatistics = function() {
                                 $scope.weekdayDonut = new Morris.Donut({
                                     element: jQuery('.statistics .weekday'),
@@ -63,7 +64,7 @@
                             }
                         });
                     }],
-                    template: document.getElementById('statistics.html').innerHTML
+                    templateUrl: '/templates/statistics.html'
                 });
         }]);
 }());

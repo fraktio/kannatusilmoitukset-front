@@ -1,3 +1,4 @@
+/* global angular */
 /* jshint maxlen: 2000 */
 (function () {
     "use strict";

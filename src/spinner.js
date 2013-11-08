@@ -1,5 +1,6 @@
+/* global angular, Spinner */
 (function () {
-    "use strict";
+    'use strict';
 
     angular.module('spinner', [])
         .value('spinner', function(element) {

@@ -1,6 +1,8 @@
-/* global angular, _ */
+/* global angular */
 (function() {
-    angular.module('lists', ['ngRoute'])
+    'use strict';
+
+    angular.module('404', ['ngRoute'])
         .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider.otherwise({redirectTo: '/'});
             $locationProvider.html5Mode(true);

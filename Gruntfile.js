@@ -1,7 +1,6 @@
+/* global module */
 (function () {
     "use strict";
-
-    var _ = require('underscore');
 
     module.exports = function (grunt) {
 
@@ -38,22 +37,15 @@
                     browser: true,
 
                     globals: {
-                        _: false,
-                        jQuery: false,
-                        angular: false,
-                        google: false,
-                        Spinner: false,
-                        module: false
                     }
                 }
+            },
+            clean: {
+                'default': ['temp']
             },
             concat: {
                 options: {
                     separator: ';'
-                },
-                clear: {
-                    src: 'src/**/*.js',
-                    dest: 'temp/kannatusilmoitukset.js'
                 },
                 uglified: {
                     src: [
@@ -69,12 +61,24 @@
                 }
             },
             copy: {
-                dev: {
+                'default': {
                     files: [
                         {
                             expand: true,
+                            cwd: 'src/',
+                            src: '**/*.html',
+                            dest: 'web/'
+                        },
+                        {
+                            expand: true,
                             cwd: 'temp/',
-                            src: '*.{js,html,css}',
+                            src: '**/*.{html,css}',
+                            dest: 'web/'
+                        },
+                        {
+                            expand: true,
+                            cwd: 'temp/',
+                            src: '**/*.min.*.js',
                             dest: 'web/'
                         }
                     ]
@@ -87,25 +91,24 @@
                 },
                 dist: {
                     files: {
-                        'temp/kannatusilmoitukset.min.js': ['<%= concat.clear.dest %>']
+                        'temp/kannatusilmoitukset.min.js': ['src/**/*.js']
                     }
                 }
             },
 
             template: {
-                default: {
+                'default': {
                     src: 'src/index.hb',
                     dest: 'temp/index.html',
-                    variables: {
-                        scripts: grunt.file.expand('src/**/*.js').map(function(name) {
-                            return _.last(name.split('/'));
-                        })
+                    variables: function() {
+                        return {
+                        };
                     }
                 }
             },
 
             less: {
-                default: {
+                'default': {
                     expand: true,
                     cwd: 'src/',
                     src: '**/*.less',
@@ -145,16 +148,16 @@
             'grunt-contrib-connect',
             'grunt-contrib-copy',
             'grunt-contrib-less',
+            'grunt-contrib-clean',
             'grunt-hashres',
             'grunt-templater'
         ].forEach(grunt.loadNpmTasks);
 
-        grunt.registerTask('build-dev', ['concat:clear', 'uglify', 'concat:uglified', 'template', 'less', 'hashres', 'copy']);
+        grunt.registerTask(
+            'build',
+            ['clean', 'jshint', 'uglify', 'concat:uglified', 'less', 'template', 'hashres', 'copy']
+        );
 
-        grunt.registerTask('build-prod', ['jshint', 'concat:clear', 'uglify', 'concat:uglified', 'template', 'less', 'hashres', 'copy']);
-
-        grunt.registerTask('test', ['jshint', 'qunit']);
-
-        grunt.registerTask('default', ['build-dev']);
+        grunt.registerTask('default', ['build']);
     };
 }());

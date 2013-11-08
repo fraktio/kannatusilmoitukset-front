@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap-responsive.min.css">
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css">
-    <link rel="stylesheet" href="/assets/css/citizens-initiative.css">
+    <link rel="stylesheet" href="/style.css">
 
     <meta property="og:title" content="Kansalaisaloitteiden kannatusilmoitukset" />
     <meta property="og:type" content="website" />
@@ -72,9 +72,10 @@
             ['_trackPageview']
         ];
     </script>
-    {{#each scripts}}
-    <script src="/{{this}}"></script>
-    {{/each}}
-    <script async src="//connect.facebook.net/fi_FI/all.js#xfbml=1"></script>
-    <script async src="//www.google-analytics.com/ga.js"></script>
+    <script src="/kannatusilmoitukset.min.js"></script>
+    <script>
+    angular.bootstrap(document, ['404', 'lists', 'navigation', 'statistics', 'initiative', 'graph']);
+    </script>
+    <!-- <script async src="//connect.facebook.net/fi_FI/all.js#xfbml=1"></script>
+    <script async src="//www.google-analytics.com/ga.js"></script> -->
 </body></html>

@@ -1,0 +1,8 @@
+<h3>
+    {{initiative.currentTotal/500 | number:0}}% {{initiative.currentTotal}}/50000
+</h3>
+<p>{{initiative.name.fi}}</p>
+<p><a href="{{initiative.url}}">Aloite kansalaisaloite.fi:ssä</a></p>
+<initiative-chart-single initiative="initiative">
+    <div id="initiative-chart-fulltime" style="width: 100%; height: 400px;"></div>
+</initiative-chart-single>

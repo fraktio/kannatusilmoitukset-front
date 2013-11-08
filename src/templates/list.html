@@ -1,0 +1,56 @@
+<h3>{{ header.fi }}</h3>
+
+<table class="table table-bordered table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Aloite</th>
+        <th>Kahden viikon nousu</th>
+        <th>Kannatus&shy;ilmoitukset</th>
+        <th>Keräysaika</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="(i, initiative) in initiatives|limitTo:num">
+        <td>{{ i + 1 }}</td>
+        <td><a href="{{ initiative.localUrl }}">{{ initiative.name.fi }}</a></td>
+        <td>
+            <div class="clearfix">
+                <div class="progress">
+                    <div class="bar bar-success" style="width: {{ initiative.twoWeekSupport / fastest * 100 }}%;">
+                        <p ng-show="initiative.twoWeekSupport / fastest >= 0.15">
+                            {{ initiative.twoWeekSupport }}
+                        </p>
+                    </div>
+                    <p ng-show="initiative.twoWeekSupport / fastest < 0.15">
+                        {{ initiative.twoWeekSupport }}
+                    </p>
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="clearfix">
+                <div class="progress">
+                    <div class="bar bar-success" style="width: {{ initiative.totalPercentage }}%;">
+                        <p ng-show="initiative.totalPercentage >= 15">
+                            {{ initiative.currentTotal }}
+                        </p>
+                    </div>
+                    <p ng-show="initiative.totalPercentage < 15">
+                        {{ initiative.currentTotal }}
+                    </p>
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="clearfix">
+                <div class="aika progress">
+                    <div class="bar" ng-class="{'bar-warning': initiative.donePercentage > 70 && initiative.donePercentage < 85, 'bar-danger': initiative.donePercentage >= 85}" style="width: {{ initiative.donePercentage }}%;"></div>
+                </div>
+                <span class="pull-left">{{ initiative.startDate | date:'dd.MM.yyyy' }}</span>
+                <span class="pull-right">{{ initiative.endDate | date:'dd.MM.yyyy' }}</span>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>

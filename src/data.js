@@ -1,4 +1,13 @@
+/* global angular, _ */
 (function() {
+    'use strict';
+
+    var timeParser = function(time) {
+        return function(start, length) {
+            return parseInt(time.substr(start, length), 10);
+        };
+    };
+
     var initiativeSupportArray = function(initiative) {
         var support = [];
         angular.forEach(initiative.totalSupportCount, function(value, time) {
@@ -30,6 +39,15 @@
         }
         return last[1] - initiative.support[i][1];
     };
+
+    var prettyUrlText = function(text) {
+        return text.split(' ').slice(0,5).join(' ')
+            .toLowerCase()
+            .replace(/[äå]/g, 'a')
+            .replace(/ö/g, 'o')
+            .replace(/[^a-z0-9]+/g, '-');
+    };
+
     var fillInitiative = function(initiative, id) {
         if (typeof initiative !== 'object') {
             return null;
@@ -52,24 +70,12 @@
         }
         return initiative;
     };
-    var fastestTwoWeek = function (initiatives) {
-        return _.max(_(initiatives).map(function(initiative) {
-            return initiative.twoWeekSupport;
-        }));
-    };
 
-    var prettyUrlText = function(text) {
-        return text.split(' ').slice(0,5).join(' ')
-            .toLowerCase()
-            .replace(/[äå]/g, 'a')
-            .replace(/ö/g, 'o')
-            .replace(/[^a-z0-9]+/g, '-');
-    };
-
-    var timeParser = function(time) {
-        return function(start, length) {
-            return parseInt(time.substr(start, length), 10);
-        };
-    };
-
+    angular.module('data', [])
+        .factory('Data', ['$http', function($http) {
+            return $http.get('/initiatives-sorted-streaked.json').then(function(res) {
+                return _(res.data).map(fillInitiative).filter(_.identity);
+            });
+        }]);
 }());
+
