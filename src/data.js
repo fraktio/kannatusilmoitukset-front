@@ -48,31 +48,44 @@
             .replace(/[^a-z0-9]+/g, '-');
     };
 
-    var fillInitiative = function(initiative, id) {
-        if (typeof initiative !== 'object') {
-            return null;
-        }
-        if (!initiative.hasOwnProperty('support')) {
-            initiative = _(initiative).extend({
-                id: id,
-                support: initiativeSupportArray(initiative),
-                dailySupport: initiativeDailySupportArray(initiative),
-                totalPercentage: Math.min(100, initiative.currentTotal / 500),
-                url: 'https://www.kansalaisaloite.fi/fi/aloite/' + id.match(/\d+$/)[0],
-                donePercentage: Math.floor((
-                    (Date.now() - new Date(initiative.startDate)) /
-                        (new Date(initiative.endDate) - new Date(initiative.startDate))
-                    )*100
-                ),
-                localUrl: '/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(initiative.name.fi)
-            });
-            initiative.twoWeekSupport = timeSupport(initiative, 1000*60*60*24*14);
-        }
-        return initiative;
-    };
+
 
     angular.module('data', [])
-        .factory('Data', ['$http', function($http) {
+        .factory('Data', ['$http', '$filter', function($http, $filter) {
+
+            var fillInitiative = function(initiative, id) {
+                if (typeof initiative !== 'object') {
+                    return null;
+                }
+                if (!initiative.hasOwnProperty('support')) {
+                    initiative = _(initiative).extend({
+                        id: id,
+                        support: initiativeSupportArray(initiative),
+                        dailySupport: initiativeDailySupportArray(initiative),
+                        totalPercentage: Math.min(100, initiative.currentTotal / 500),
+                        url: 'https://www.kansalaisaloite.fi/fi/aloite/' + id.match(/\d+$/)[0],
+                        donePercentage: Math.floor((
+                            (Date.now() - new Date(initiative.startDate)) /
+                                (new Date(initiative.endDate) - new Date(initiative.startDate))
+                            )*100
+                        ),
+                        localUrl: '/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(initiative.name.fi)
+                    });
+                    initiative.twoWeekSupport = timeSupport(initiative, 1000*60*60*24*14);
+
+                    initiative.dailySupportCsv = function() {
+                        return encodeURIComponent(
+                            _(initiative.dailySupport).map(function(dailySupport) {
+                                var daily = angular.copy(dailySupport);
+                                daily[0] = '"' + $filter('date')(new Date(daily[0]), 'dd.MM.yyyy') + '"';
+                                return daily.join(',');
+                            }).join('\n')
+                        );
+                    };
+                }
+                return initiative;
+            };
+
             return $http.get('/initiatives-sorted-streaked.json').then(function(res) {
                 return _(res.data).map(fillInitiative).filter(_.identity);
             });
