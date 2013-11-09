@@ -121,7 +121,7 @@
 
             watch: {
                 files: ['Gruntfile.js', 'src/**'],
-                tasks: ['build-dev']
+                tasks: ['build']
             }
         });
 

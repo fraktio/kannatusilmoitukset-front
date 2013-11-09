@@ -4,19 +4,27 @@ Front end for the citizens' initiative visualization service kannatusilmoitukset
 
 ## Data
 
-The current version requires a processed version of the public initiative support data. This data, updated hourly, is available at
+The initiative support data is currently available in three forms, all updated hourly.
+
+You may use the data for any purpose.
+
+### Original format with hourly data points
 
 http://kannatusilmoitukset.fi/initiatives-all.json
 
-A better API for fetching this processed data and the original history of support data will be made available shortly. If you have any plans for the usage, do contact us and describe your needs.
+### Streaked data
 
-### Sorted, streaked data
+A similar format with values streaked:
 
-A similar format but with dates sorted and values streaked:
-
-{'date4':2,'date1':1,'date2':1,'date3':1} -> {'date1':1,'date3':1,'date4':2}
+{'date1':1,'date2':1,'date3':1,'date4':2} -> {'date1':1,'date3':1,'date4':2}
 
 http://kannatusilmoitukset.fi/initiatives-sorted-streaked.json
+
+### Single initiative streaked
+
+Similar to streaked data, but separated to a separate file for each initiative.
+
+http://kannatusilmoitukset.fi/initiatives/33.json
 
 ## Installation
 

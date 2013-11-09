@@ -6,8 +6,9 @@
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/:id/:pretty', {
-                    controller: ['$routeParams', '$scope', 'Data',
-                        function($routeParams, $scope, Data) {
+                    controller: ['$routeParams', '$scope', 'Data', '$location',
+                        function($routeParams, $scope, Data, $location) {
+                            $scope.host = $location.host();
                             var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                             window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
                             $scope.initiative = {};

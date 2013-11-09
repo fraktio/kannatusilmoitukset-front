@@ -60,6 +60,7 @@
                 if (!initiative.hasOwnProperty('support')) {
                     initiative = _(initiative).extend({
                         id: id,
+                        token: id.match(/\d+$/)[0],
                         support: initiativeSupportArray(initiative),
                         dailySupport: initiativeDailySupportArray(initiative),
                         totalPercentage: Math.min(100, initiative.currentTotal / 500),

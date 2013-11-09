@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/core/tooltip.css">
+    <style>
+        html, body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          overflow: hidden;
+        }
+        g text {
+          font-size: 14px;
+        }
+        .google-visualization-tooltip .initiative-tooltip {
+            padding: 10px;
+        }
+        .google-visualization-tooltip .initiative-tooltip p {
+            margin: 0;
+            padding: 0;
+            max-width: 400px;
+        }
+        .google-visualization-tooltip .initiative-tooltip .count {
+            font-weight: bold;
+            font-size: 130%;
+            margin: 0 10px 0 0;
+        }
+    </style>
+</head>
+<body>
+<div id="chart"></div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="//www.google.com/jsapi"></script>
+<script>
+$(function() {
+    var initiativeId = (window.location.search.match(/[?&]initiative=(\d+)/)||[,null])[1];
+
+    var dataPromise = $.getJSON('/initiatives/' + initiativeId + '.json');
+
+    var chartElem = document.getElementById('chart');
+
+    var timeParser = function(time) {
+        return function(start, length) {
+            return parseInt(time.substr(start, length), 10);
+        };
+    };
+
+    var initiativeSupportArray = function(initiative) {
+        var support = [];
+        $.each(initiative.totalSupportCount, function(time, value) {
+            time = timeParser(time);
+            time = new Date(time(0, 4), time(4, 2) - 1, time(6, 2), time(9, 2));
+            support.push([time, value]);
+        });
+        return support;
+    };
+
+    google.load('visualization', '1', {packages: ['corechart'], callback: function() {
+        var dateFormatter = new google.visualization.DateFormat({
+            pattern: "dd.MM.yyyy HH:mm"
+        });
+
+        dataPromise.done(function(initiative) {
+            initiative.support = initiativeSupportArray(initiative);
+            var rows = [
+                [
+                    new Date(initiative.startDate),
+                    0,
+                    false,
+                    '<div class="initiative-tooltip"><p>' +
+                            '<span class="count">0</span>' +
+                            '<span class="date">' + dateFormatter.formatValue(new Date(initiative.startDate)) + '</span>' +
+                            '</p></div>'
+                ]
+            ];
+            $.each(initiative.support, function(key, value) {
+                if (!value.hasOwnProperty('length') || value.length !== 2) {
+                    return;
+                }
+                var val = value.slice(0);
+                val.push(true);
+                val.push(
+                        '<div class="initiative-tooltip"><p>' +
+                                '<span class="count">' + value[1] + '</span>' +
+                                '<span class="date">' + dateFormatter.formatValue(value[0]) + '</span>' +
+                                '</p></div>'
+                );
+                rows.push(val);
+            });
+
+            rows.unshift();
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'Time');
+            data.addColumn('number', initiative.name.fi);
+            data.addColumn({type:'boolean',role:'certainty'});
+            data.addColumn({type:'string',role:'tooltip',p:{html:true}});
+            data.addRows(rows);
+
+            var chartOptions = {
+                'backgroundColor': 'transparent',
+                'hAxis': {
+                    'format': 'MM.yyyy',
+                    'minValue': new Date(initiative.startDate),
+                    'maxValue': new Date(initiative.endDate),
+                    'viewWindow': {
+                        'min': new Date(initiative.startDate),
+                        'max': new Date(initiative.endDate)
+                    }
+                },
+                'vAxis': {
+                    'minValue': 0,
+                    'maxValue': Math.max(50000, initiative.currentTotal+10000),
+                    'viewWindow': {
+                        'min': 0,
+                        'max': Math.max(50000, initiative.currentTotal+10000)
+                    },
+                    'gridlines': {
+                        'count': 6
+                    }
+                },
+                'legend': {
+                    'position': 'none'
+                },
+                'chartArea': {
+                    'top': 10,
+                    'left': 60
+                },
+                'tooltip': {
+                    'isHtml': true
+                }
+            };
+
+            var chart = new google.visualization.ChartWrapper({
+                chartType: 'LineChart',
+                containerId: 'chart',
+                dataTable: data
+            });
+            chart.setOptions(chartOptions);
+
+            var draw = function() {
+                chartElem.style.height = '' + window.innerHeight + 'px';
+                chartOptions.chartArea.width = window.innerWidth - 65;
+                chartOptions.chartArea.height = window.innerHeight - 40;
+                chart.draw();
+            };
+            var lazyDraw = _.debounce(draw, 50);
+
+            draw();
+            $(window).resize(lazyDraw);
+        });
+    }});
+});
+</script>
+</body>
+</html>
