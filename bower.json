@@ -7,6 +7,7 @@
     "angular": "1.2.0-rc.2",
     "angular-bootstrap": "0.6.0",
     "angular-route": "1.2.0-rc.2",
-    "spin.js": "~1.2.8"
+    "spin.js": "~1.2.8",
+    "bootstrap": "~3.0.2"
   }
 }

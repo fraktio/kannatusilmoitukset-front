@@ -1,11 +1,17 @@
+
+@import "../bower_components/bootstrap/less/bootstrap";
+
+@font-family-sans-serif:  Sintony, "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-serif:       Georgia, "Times New Roman", Times, serif;
+@font-family-monospace:   Monaco, Menlo, Consolas, "Courier New", monospace;
+@font-family-base:        @font-family-sans-serif;
+
 html {
     min-width: 600px;
     overflow-y: scroll;
 }
 body {
     background-image: url('/assets/images/background.png');
-    font-family: "Sintony";
-
     margin-top: 10px;
 }
 
@@ -38,6 +44,7 @@ g text {
 .google-visualization-tooltip .initiative-tooltip p {
     margin: 0;
     padding: 0;
+    min-width: 220px;
     max-width: 400px;
 }
 .google-visualization-tooltip .initiative-tooltip .count {
@@ -58,12 +65,23 @@ body > .goog-tooltip {
     max-height: 500px;
     overflow: hidden;
 }
-h3 {
-    margin: 0;
-}
 
 table {
-    margin-top: 20px;
+  margin-top: 20px;
+
+  &.table-bordered th, &.table-bordered td {
+    max-width: 150px;
+    overflow: hidden;
+  }
+
+  &.initiatives {
+    td {
+      a {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
 }
 
 .progress {
@@ -82,18 +100,13 @@ table {
     padding: 4px 0 0 5px;
 }
 
-.progress .bar-success p {
+.progress .progress-bar-success p {
     color: white;
     display: block;
     margin: 3px 5px 0 0;
     padding: 0;
     text-align: right;
     text-shadow: none;
-}
-
-.table-bordered th, .table-bordered td {
-    max-width: 150px;
-    overflow: hidden;
 }
 
 .navbar {

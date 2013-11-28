@@ -1,6 +1,6 @@
 <div class="navbar">
     <div class="navbar-inner">
-        <ul class="nav">
+        <ul class="nav nav-pills">
             <li ng-repeat="link in links" ng-class="{active: link.href == location.path()}">
                 <a href="{{ link.href }}">{{ link.name }}</a>
             </li>
