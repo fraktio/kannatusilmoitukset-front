@@ -19,11 +19,11 @@
                 <div class="progress">
                     <div class="progress-bar progress-bar-success" ng-style="{ width: '' + (initiative.twoWeekSupport / fastest * 100) + '%' }">
                         <p ng-show="initiative.twoWeekSupport / fastest >= 0.15">
-                            {{ initiative.twoWeekSupport }}
+                            {{ initiative.twoWeekSupport }}
                         </p>
                     </div>
                     <p ng-show="initiative.twoWeekSupport / fastest < 0.15">
-                        {{ initiative.twoWeekSupport }}
+                        {{ initiative.twoWeekSupport }}
                     </p>
                 </div>
             </div>
@@ -33,11 +33,11 @@
                 <div class="progress">
                     <div class="progress-bar progress-bar-success" ng-style="{ width: '' + initiative.totalPercentage + '%' }">
                         <p ng-show="initiative.totalPercentage >= 15">
-                            {{ initiative.currentTotal }}
+                            {{ initiative.currentTotal }}
                         </p>
                     </div>
                     <p ng-show="initiative.totalPercentage < 15">
-                        {{ initiative.currentTotal }}
+                        {{ initiative.currentTotal }}
                     </p>
                 </div>
             </div>

@@ -9,7 +9,7 @@
     };
 
     angular.module('lists', ['ngRoute', 'data'])
-        .config(['$routeProvider', function($routeProvider) {
+        .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/', {
                     controller: ['$scope', 'Data', function($scope, Data) {

@@ -25,7 +25,7 @@
                 time = (new Date(time(0, 4), time(4, 2) - 1, time(6, 2))).getTime();
                 return [time, value];
             })
-            .uniq(true, function(value) {
+            .uniq(true, function(value) {
                 return value[0];
             })
             .value();

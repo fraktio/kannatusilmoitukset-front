@@ -3,7 +3,7 @@
     'use strict';
 
     angular.module('statistics', ['ngRoute', 'data'])
-        .config(['$routeProvider', function($routeProvider) {
+        .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/tilastot', {
                     controller: ['$scope', 'Data', function($scope, Data) {

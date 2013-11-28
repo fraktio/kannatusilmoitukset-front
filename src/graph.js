@@ -11,7 +11,7 @@
     };
 
     angular.module('graph', ['ngRoute', 'spinner', 'data', 'chartapi'])
-        .config(['$routeProvider', function($routeProvider) {
+        .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/graafi', {
                     controller: ['$scope', '$location', 'Graph', 'spinner',
@@ -177,7 +177,7 @@
                             locationSetter(
                                 '/' + id.match(/\d+$/)[0] + '/' +
                                     prettyUrlText(
-                                        _(data).find(function(initiative) { return initiative.id === id; }).name.fi
+                                        _(data).find(function(initiative) { return initiative.id === id; }).name.fi
                                     )
                             );
                         });

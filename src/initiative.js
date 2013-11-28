@@ -3,7 +3,7 @@
     'use strict';
 
     angular.module('initiative', ['ngRoute', 'data', 'chartapi'])
-        .config(['$routeProvider', function($routeProvider) {
+        .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/:id/:pretty', {
                     controller: ['$routeParams', '$scope', 'Data', '$location',
@@ -13,7 +13,7 @@
                             window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
                             $scope.initiative = {};
                             Data.then(function(data) {
-                                $scope.initiative = _(data).find(function(initiative) { return initiative.id === id; });
+                                $scope.initiative = _(data).find(function(initiative) { return initiative.id === id; });
                             });
                         }],
                     templateUrl: '/templates/initiatives-one.html'
