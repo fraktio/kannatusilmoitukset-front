@@ -17,7 +17,7 @@
         <td>
             <div class="clearfix">
                 <div class="progress">
-                    <div class="progress-bar progress-bar-success" style="width: {{ initiative.twoWeekSupport / fastest * 100 }}%;">
+                    <div class="progress-bar progress-bar-success" ng-style="{ width: '' + (initiative.twoWeekSupport / fastest * 100) + '%' }">
                         <p ng-show="initiative.twoWeekSupport / fastest >= 0.15">
                             {{ initiative.twoWeekSupport }}
                         </p>
@@ -31,7 +31,7 @@
         <td>
             <div class="clearfix">
                 <div class="progress">
-                    <div class="progress-bar progress-bar-success" style="width: {{ initiative.totalPercentage }}%;">
+                    <div class="progress-bar progress-bar-success" ng-style="{ width: '' + initiative.totalPercentage + '%' }">
                         <p ng-show="initiative.totalPercentage >= 15">
                             {{ initiative.currentTotal }}
                         </p>
@@ -45,7 +45,11 @@
         <td>
             <div class="clearfix">
                 <div class="aika progress">
-                    <div class="progress-bar" ng-class="{'progress-bar-warning': initiative.donePercentage > 70 && initiative.donePercentage < 85, 'progress-bar-danger': initiative.donePercentage >= 85}" style="width: {{ initiative.donePercentage }}%;"></div>
+                    <div
+                        class="progress-bar"
+                        ng-class="{'progress-bar-warning': initiative.donePercentage > 70 && initiative.donePercentage < 85, 'progress-bar-danger': initiative.donePercentage >= 85}"
+                        ng-style="{ width: '' + initiative.donePercentage + '%' }"
+                    ></div>
                 </div>
                 <span class="pull-left">{{ initiative.startDate | date:'dd.MM.yyyy' }}</span>
                 <span class="pull-right">{{ initiative.endDate | date:'dd.MM.yyyy' }}</span>
