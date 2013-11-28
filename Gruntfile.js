@@ -49,7 +49,7 @@
                 },
                 uglified: {
                     src: [
-                        'bower_components/yepnope/yepnope.js',
+                        'bower_components/yepnope/yepnope*min.js',
                         'bower_components/underscore/underscore-min.js',
                         'bower_components/angular/angular.min.js',
                         'bower_components/angular-route/angular-route.min.js',
@@ -103,6 +103,16 @@
                 }
             },
 
+            cssmin: {
+                'default': {
+                    expand: true,
+                    cwd: 'temp/',
+                    src: ['**/*.css', '!**/*.min.css'],
+                    dest: 'temp/',
+                    ext: '.min.css'
+                }
+            },
+
             hashres: {
                 options: {
                     encoding: 'utf8',
@@ -133,12 +143,23 @@
             'grunt-contrib-copy',
             'grunt-contrib-less',
             'grunt-contrib-clean',
+            'grunt-contrib-cssmin',
             'grunt-hashres'
         ].forEach(grunt.loadNpmTasks);
 
         grunt.registerTask(
             'build',
-            ['clean', 'jshint', 'uglify', 'concat:uglified', 'less', 'copy:temp', 'hashres', 'copy:web']
+            [
+                'clean',
+                'jshint',
+                'uglify',
+                'concat:uglified',
+                'less',
+                'cssmin',
+                'copy:temp',
+                'hashres',
+                'copy:web'
+            ]
         );
 
         grunt.registerTask('default', ['build']);
