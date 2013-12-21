@@ -38,13 +38,11 @@
                                         });
                                         return data;
                                     }, _.map(_.range(24), function(num) {
-                                        var formatHour = function(hour) {
-                                            if (hour < 0) {
-                                                hour = 23;
-                                            }
+                                        var format = function(hour) {
+                                            hour = (24 + hour) % 24;
                                             return (hour < 10 ? '0' : '') + hour + ':00';
                                         };
-                                        return {label: formatHour(num - 1) + ' - ' + formatHour(num), value: 0};
+                                        return {label: format(num - 1) + ' - ' + format(num), value: 0};
                                     })),
                                     xkey: 'label',
                                     ykeys: ['value'],
