@@ -38,7 +38,13 @@
                                         });
                                         return data;
                                     }, _.map(_.range(24), function(num) {
-                                        return {label: '' + num, value: 0};
+                                        var formatHour = function(hour) {
+                                            if (hour < 0) {
+                                                hour = 23;
+                                            }
+                                            return (hour < 10 ? '0' : '') + hour + ':00';
+                                        };
+                                        return {label: formatHour(num - 1) + ' - ' + formatHour(num), value: 0};
                                     })),
                                     xkey: 'label',
                                     ykeys: ['value'],
