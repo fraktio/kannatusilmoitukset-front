@@ -33,8 +33,7 @@
                     templateUrl: '/templates/list.html'
                 })
                 .when('/lista/kannatetuimmat/:num', {
-                    controller: ['$scope', '$routeParams', 'Data', function($scope, $routeParams, Data) {
-                        $scope.num = $routeParams.num;
+                    controller: ['$scope', 'Data', function($scope, Data) {
                         $scope.header = {
                             fi: 'Koko keräysaikanaan kannatetuimmat aloitteet'
                         };
@@ -54,8 +53,7 @@
                     templateUrl: '/templates/list.html'
                 })
                 .when('/lista/paattyneet/:num', {
-                    controller: ['$scope', '$routeParams', 'Data', function($scope, $routeParams, Data) {
-                        $scope.num = $routeParams.num;
+                    controller: ['$scope', 'Data', function($scope, Data) {
                         $scope.header = {
                             fi: 'Kannatetuimmat päättyneet aloitteet'
                         };

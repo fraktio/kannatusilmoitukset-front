@@ -9,8 +9,8 @@
                 controller: ['$scope', '$location', function($scope, $location) {
                     $scope.links = [
                         {href: '/', name: 'Nousijat'},
-                        {href: '/lista/kannatetuimmat/100', name: 'Kannatetuimmat'},
-                        {href: '/lista/paattyneet/100', name: 'Päättyneet'},
+                        {href: '/lista/kannatetuimmat/', name: 'Kannatetuimmat'},
+                        {href: '/lista/paattyneet/', name: 'Päättyneet'},
                         {href: '/graafi', name: 'Graafi (6kk)'},
                         {href: '/tilastot', name: 'Tilastot'}
                     ];

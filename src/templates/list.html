@@ -11,7 +11,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="(i, initiative) in initiatives|limitTo:num">
+    <tr ng-repeat="(i, initiative) in initiatives">
         <td>{{ i + 1 }}</td>
         <td><a href="{{ initiative.localUrl }}">{{ initiative.name.fi }}</a></td>
         <td>
