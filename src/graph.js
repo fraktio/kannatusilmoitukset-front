@@ -40,7 +40,7 @@
 
             var formNames = function(initiatives) {
                 var names = _.map(initiatives, function(initiative) {
-                    return initiative.name.fi;
+                    return initiative.name.fill;
                 });
                 names.unshift('Time');
                 return names;
@@ -88,7 +88,7 @@
                                 '<div class="initiative-tooltip"><p>' +
                                     '<span class="count">' + count + '</span>' +
                                     '<span class="date">' + $filter('date')(time, "dd.MM.yyyy") + '</span>' +
-                                    '</p><p class="name">' + initiative.name.fi + '</p></div>';
+                                    '</p><p class="name">' + initiative.name.fill + '</p></div>';
                         });
                     });
                     var chartData = _.values(dailySupports);
@@ -177,7 +177,7 @@
                             locationSetter(
                                 '/' + id.match(/\d+$/)[0] + '/' +
                                     prettyUrlText(
-                                        _(data).find(function(initiative) { return initiative.id === id; }).name.fi
+                                        _(data).find(function(initiative) { return initiative.id === id; }).name.fill
                                     )
                             );
                         });

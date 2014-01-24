@@ -50,7 +50,7 @@
 
                 var data = new google.visualization.DataTable();
                 data.addColumn('datetime', 'Time');
-                data.addColumn('number', initiative.name.fi);
+                data.addColumn('number', initiative.name.fill);
                 data.addColumn({type:'boolean',role:'certainty'});
                 data.addColumn({type:'string',role:'tooltip',p:{html:true}});
 

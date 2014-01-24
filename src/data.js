@@ -69,10 +69,11 @@
                             (Date.now() - new Date(initiative.startDate)) /
                                 (new Date(initiative.endDate) - new Date(initiative.startDate))
                             )*100
-                        ),
-                        localUrl: '/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(initiative.name.fi)
+                        )
                     });
+                    initiative.name.fill = _(initiative.name).chain().values().filter(_.identity).value()[0];
                     initiative.twoWeekSupport = timeSupport(initiative, 1000*60*60*24*14);
+                    initiative.localUrl = '/' + id.match(/\d+$/)[0] + '/' + prettyUrlText(initiative.name.fill);
 
                     initiative.dailySupportCsv = function() {
                         return encodeURIComponent(
