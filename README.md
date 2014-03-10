@@ -26,22 +26,29 @@ Similar to streaked data, but separated to a separate file for each initiative.
 
 http://kannatusilmoitukset.fi/initiatives/33.json
 
+### Meta + single initiative png
+
+http://kannatusilmoitukset.fi/initiatives/img/meta.json
+http://kannatusilmoitukset.fi/initiatives/img/33.png
+
 ## Installation
 
 Generate the static page and assets as described under _Development_.
 
-Fetch a snapshot of the data:
-
-    curl http://kannatusilmoitukset.fi/initiatives-sorted-streaked.json > web/initiatives-sorted-streaked.json
-
-Redirect all non-static requests to index.html, nginx example:
+Redirect all non-static requests to index.html and make data available, nginx example:
 
     server {
         server_name kannatusilmoitukset.tunk.io;
         root /home/pkjedi/workspace/kannatusilmoitukset-front/web;
         index index.html;
+
         location / {
             try_files $uri $uri/ /index.html;
+        }
+
+        # Make the data under /initiatives/ available
+        location /initiatives/ {
+            proxy_pass http://kannatusilmoitukset.fi;
         }
     }
 
