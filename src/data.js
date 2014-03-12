@@ -26,12 +26,6 @@
     };
 
     angular.module('data', [])
-        .factory('Data', ['ListData', 'history', '$q', function(ListData, history, $q) {
-            return ListData.then(function(initiatives) {
-                var histories = _(initiatives).map(history);
-                return $q.all(histories);
-            });
-        }])
         .factory('ListData', ['$http', function($http) {
             var fillInitiative = function(initiative) {
                 initiative = _(initiative).extend({
@@ -126,6 +120,17 @@
 
                     return initiative;
                 });
+            };
+        }])
+        .factory('histories', ['ListData', 'history', '$q', function(ListData, history, $q) {
+            return function(initiatives) {
+                if (!initiatives) {
+                    return ListData.then(function(initiatives) {
+                        return $q.all(_(initiatives).map(history));
+                    });
+                }
+
+                return $q.all(_(initiatives).map(history));
             };
         }]);
 }());

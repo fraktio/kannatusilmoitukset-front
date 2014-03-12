@@ -12,38 +12,36 @@
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/', {
-                    controller: ['$scope', 'ListData', 'history', '$q', function($scope, ListData, history, $q) {
-                        $scope.num = 100;
+                    controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
                         $scope.header = {
                             fi: 'Viimeisten kahden viikon aikana kannatetuimmat aloitteet'
                         };
 
-                        ListData.then(function(data) {
-                            return _(data).filter(function(initiative) {
-                                return initiative && new Date(initiative.endDate) > Date.now();
-                            });
-                        }).then(function(initiatives) {
-                            var histories = _(initiatives).map(history);
-                            $scope.fastest = $q.all(histories).then(function(initiatives) {
-                                return fastestTwoWeek(initiatives);
-                            });
-                            $scope.initiatives = $q.all(histories).then(function(initiatives) {
+                        $scope.initiatives = ListData
+                            .then(function(initiatives) {
+                                return _(initiatives).filter(function(initiative) {
+                                    return initiative && new Date(initiative.endDate) > Date.now();
+                                });
+                            })
+                            .then(histories)
+                            .then(function(initiatives) {
                                 return _(initiatives).sortBy(function(initiative) {
                                     return -initiative.twoWeekSupport;
                                 });
                             });
-                        });
+
+                        $scope.fastest = $scope.initiatives.then(fastestTwoWeek);
                     }],
                     templateUrl: '/templates/list.html'
                 })
                 .when('/lista/kannatetuimmat/:num', {
-                    controller: ['$scope', 'ListData', 'history', '$q', function($scope, ListData, history, $q) {
+                    controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
                         $scope.header = {
                             fi: 'Koko keräysaikanaan kannatetuimmat aloitteet'
                         };
 
-                        $scope.initiatives = ListData.then(function(data) {
-                            return _.chain(data)
+                        $scope.initiatives = ListData.then(function(initiatives) {
+                            return _.chain(initiatives)
                                 .filter(function(initiative) {
                                     return new Date(initiative.endDate) > Date.now();
                                 })
@@ -51,26 +49,20 @@
                                     return -initiative.currentTotal;
                                 })
                                 .value();
-                        }).then(function(initiatives) {
-                            var histories = _(initiatives).map(history);
-                            $scope.fastest = $q.all(histories).then(function(initiatives) {
-                                return fastestTwoWeek(initiatives);
-                            });
-
-                            return initiatives;
                         });
+
+                        $scope.fastest = $scope.initiatives.then(histories).then(fastestTwoWeek);
                     }],
                     templateUrl: '/templates/list.html'
                 })
                 .when('/lista/paattyneet/:num', {
-                    controller: ['$scope', 'ListData', 'history', '$q', function($scope, ListData, history, $q) {
+                    controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
                         $scope.header = {
                             fi: 'Kannatetuimmat päättyneet aloitteet'
                         };
-                        $scope.initiatives = [];
 
-                        $scope.initiatives = ListData.then(function(data) {
-                            return _.chain(data)
+                        $scope.initiatives = ListData.then(function(initiatives) {
+                            return _.chain(initiatives)
                                 .filter(function(initiative) {
                                     return new Date(initiative.endDate) <= Date.now();
                                 })
@@ -78,14 +70,9 @@
                                     return -initiative.currentTotal;
                                 })
                                 .value();
-                        }).then(function(initiatives) {
-                            var histories = _(initiatives).map(history);
-                            $scope.fastest = $q.all(histories).then(function(initiatives) {
-                                return fastestTwoWeek(initiatives);
-                            });
-
-                            return initiatives;
                         });
+
+                        $scope.fastest = $scope.initiatives.then(histories).then(fastestTwoWeek);
                     }],
                     templateUrl: '/templates/list.html'
                 });

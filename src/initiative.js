@@ -11,13 +11,13 @@
                             $scope.host = $location.host();
                             var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                             window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-                            $scope.initiative = {};
-                            ListData.then(function(data) {
-                                var initiative = _(data).find(function(initiative) { return initiative.id === id; });
-                                history(initiative).then(function(initiative) {
-                                    $scope.initiative = initiative;
-                                });
-                            });
+                            $scope.initiative = ListData
+                                .then(function(initiatives) {
+                                    return _(initiatives).find(function(initiative) {
+                                        return initiative.id === id;
+                                    });
+                                })
+                                .then(history);
                         }],
                     templateUrl: '/templates/initiatives-one.html'
                 });
@@ -32,7 +32,7 @@
                 },
                 controller: ['$scope', 'drawSingle', 'CoreCharts', function($scope, drawSingle, CoreCharts) {
                     $scope.$watch('initiative', function(initiative) {
-                        if (!initiative.id) {
+                        if (!_.isObject(initiative) || !_.isString(initiative.id)) {
                             return;
                         }
                         CoreCharts.then(function() {

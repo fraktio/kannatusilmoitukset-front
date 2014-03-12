@@ -23,7 +23,7 @@
                             Graph.drawWithData('chart_div');
                         }
                     ],
-                    templateUrl: '/templates/initiatives-all.html'
+                    template: '<div id="chart_div">Lasketaan kannatusilmoituksia...</div>'
                 });
         }])
         .factory('GraphData', ['$filter', function($filter) {
@@ -92,8 +92,8 @@
                 }
             };
         }])
-        .factory('Graph', ['ListData', 'history', 'GraphData', 'CoreCharts', '$q',
-            function(ListData, history, GraphData, CoreCharts, $q) {
+        .factory('Graph', ['ListData', 'histories', 'GraphData', 'CoreCharts',
+            function(ListData, histories, GraphData, CoreCharts) {
 
             var wrapper = null;
             var locationSetter = null;
@@ -103,9 +103,9 @@
                 },
 
                 drawWithData: function(containerId) {
-                    ListData.then(function(initiatives) {
-                        initiatives =
-                            _(initiatives).chain()
+                    ListData
+                        .then(function(initiatives) {
+                            return _(initiatives).chain()
                                 .filter(function(initiative) {
                                     return new Date(initiative.endDate) > Date.now();
                                 })
@@ -113,13 +113,13 @@
                                     return -initiative.currentTotal;
                                 })
                                 .value();
-                        var histories = _(initiatives).map(history);
-                        CoreCharts.then(function() {
-                            $q.all(histories).then(function(initiatives) {
+                        })
+                        .then(histories)
+                        .then(function(initiatives) {
+                            CoreCharts.then(function() {
                                 Graph.draw(initiatives, containerId);
                             });
                         });
-                    });
                 },
                 draw: function(data, containerId) {
                     if (document.getElementById(containerId).childElementCount > 1) {
