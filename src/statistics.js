@@ -1,14 +1,29 @@
-/* global angular, _, yepnope, Morris, window, jQuery */
+/* global angular, _, yepnope, window, jQuery */
 (function() {
     'use strict';
 
     angular.module('statistics', ['ngRoute', 'data'])
+        .factory('Morris', ['$q', function($q) {
+            var deferred = $q.defer();
+            yepnope({
+                load: [
+                    '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.css',
+                    '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
+                    '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
+                    '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'
+                ],
+                complete: function() {
+                    deferred.resolve(window.Morris);
+                }
+            });
+            return deferred.promise;
+        }])
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/tilastot', {
-                    controller: ['$scope', 'Data', function($scope, Data) {
-                        Data.then(function(initiatives) {
-                            var drawStatistics = function() {
+                    controller: ['$scope', 'histories', 'Morris', function($scope, histories, Morris) {
+                        histories().then(function(initiatives) {
+                            Morris.then(function(Morris) {
                                 $scope.weekdayDonut = new Morris.Donut({
                                     element: jQuery('.statistics .weekday'),
                                     data: _(initiatives).reduce(function(data, initiative) {
@@ -52,20 +67,7 @@
                                     axes: false,
                                     grid: false
                                 });
-                            };
-                            if (_([window.jQuery, window.Raphael, window.Morris]).some(_.isUndefined)) {
-                                yepnope({
-                                    load: [
-                                        '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.css',
-                                        '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
-                                        '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                                        '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'
-                                    ],
-                                    complete: drawStatistics
-                                });
-                            } else {
-                                drawStatistics();
-                            }
+                            });
                         });
                     }],
                     templateUrl: '/templates/statistics.html'

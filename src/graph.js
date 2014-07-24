@@ -23,7 +23,7 @@
                             Graph.drawWithData('chart_div');
                         }
                     ],
-                    templateUrl: '/templates/initiatives-all.html'
+                    template: '<div id="chart_div">Lasketaan kannatusilmoituksia...</div>'
                 });
         }])
         .factory('GraphData', ['$filter', function($filter) {
@@ -47,16 +47,7 @@
             };
 
             return {
-                googleDataArray: function(data) {
-                    var initiatives = _.chain(angular.copy(data))
-                        .filter(function(initiative) {
-                            return new Date(initiative.endDate) > Date.now();
-                        })
-                        .sortBy(function(initiative) {
-                            return -initiative.currentTotal;
-                        })
-                        .value();
-
+                googleDataArray: function(initiatives) {
                     var idPos = formIdPos(initiatives);
 
                     var dailySupports = new Array(180);
@@ -101,7 +92,9 @@
                 }
             };
         }])
-        .factory('Graph', ['Data', 'GraphData', 'CoreCharts', function(Data, GraphData, CoreCharts) {
+        .factory('Graph', ['ListData', 'histories', 'GraphData', 'CoreCharts',
+            function(ListData, histories, GraphData, CoreCharts) {
+
             var wrapper = null;
             var locationSetter = null;
             var Graph = {
@@ -110,11 +103,23 @@
                 },
 
                 drawWithData: function(containerId) {
-                    Data.then(function(data) {
-                        CoreCharts.then(function() {
-                            Graph.draw(data, containerId);
+                    ListData
+                        .then(function(initiatives) {
+                            return _(initiatives).chain()
+                                .filter(function(initiative) {
+                                    return new Date(initiative.endDate) > Date.now();
+                                })
+                                .sortBy(function(initiative) {
+                                    return -initiative.currentTotal;
+                                })
+                                .value();
+                        })
+                        .then(histories)
+                        .then(function(initiatives) {
+                            CoreCharts.then(function() {
+                                Graph.draw(initiatives, containerId);
+                            });
                         });
-                    });
                 },
                 draw: function(data, containerId) {
                     if (document.getElementById(containerId).childElementCount > 1) {
@@ -173,7 +178,7 @@
 
                         wrapper.getChart().setSelection(null);
 
-                        Data.then(function(data) {
+                        ListData.then(function(data) {
                             locationSetter(
                                 '/' + id.match(/\d+$/)[0] + '/' +
                                     prettyUrlText(

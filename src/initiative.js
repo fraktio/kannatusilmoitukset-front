@@ -6,15 +6,18 @@
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/:id/:pretty', {
-                    controller: ['$routeParams', '$scope', 'Data', '$location',
-                        function($routeParams, $scope, Data, $location) {
+                    controller: ['$routeParams', '$scope', 'ListData', 'history', '$location',
+                        function($routeParams, $scope, ListData, history, $location) {
                             $scope.host = $location.host();
                             var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                             window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-                            $scope.initiative = {};
-                            Data.then(function(data) {
-                                $scope.initiative = _(data).find(function(initiative) { return initiative.id === id; });
-                            });
+                            $scope.initiative = ListData
+                                .then(function(initiatives) {
+                                    return _(initiatives).find(function(initiative) {
+                                        return initiative.id === id;
+                                    });
+                                })
+                                .then(history);
                         }],
                     templateUrl: '/templates/initiatives-one.html'
                 });
@@ -29,7 +32,7 @@
                 },
                 controller: ['$scope', 'drawSingle', 'CoreCharts', function($scope, drawSingle, CoreCharts) {
                     $scope.$watch('initiative', function(initiative) {
-                        if (!initiative.id) {
+                        if (!_.isObject(initiative) || !_.isString(initiative.id)) {
                             return;
                         }
                         CoreCharts.then(function() {
