@@ -5,7 +5,7 @@
     <tr>
         <th>#</th>
         <th>Aloite</th>
-        <th>Kahden viikon nousu</th>
+        <th ng-if="!list.hideTwoWeek">Kahden viikon nousu</th>
         <th>Kannatus&shy;ilmoitukset</th>
         <th>Keräysaika</th>
     </tr>
@@ -14,15 +14,15 @@
     <tr ng-repeat="(i, initiative) in initiatives">
         <td>{{ i + 1 }}</td>
         <td><a href="{{ initiative.localUrl }}">{{ initiative.name.fill }}</a></td>
-        <td>
+        <td ng-if="!list.hideTwoWeek">
             <div class="clearfix">
                 <div class="progress">
-                    <div class="progress-bar progress-bar-success" ng-style="{ width: '' + (initiative.twoWeekSupport / fastest * 100) + '%' }">
-                        <p ng-show="initiative.twoWeekSupport / fastest >= 0.15">
+                    <div class="progress-bar progress-bar-success" ng-style="{ width: '' + (initiative.twoWeekSupport / list.fastest * 100) + '%' }">
+                        <p ng-show="initiative.twoWeekSupport / list.fastest >= 0.15">
                             {{ initiative.twoWeekSupport }}
                         </p>
                     </div>
-                    <p ng-show="initiative.twoWeekSupport / fastest < 0.15">
+                    <p ng-show="initiative.twoWeekSupport / list.fastest < 0.15">
                         {{ initiative.twoWeekSupport }}
                     </p>
                 </div>

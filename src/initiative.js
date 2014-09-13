@@ -16,8 +16,8 @@
                                     return _(initiatives).find(function(initiative) {
                                         return initiative.id === id;
                                     });
-                                })
-                                .then(history);
+                                });
+                            $scope.initiative.then(history);
                         }],
                     templateUrl: '/templates/initiatives-one.html'
                 });

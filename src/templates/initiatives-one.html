@@ -1,4 +1,4 @@
-<div ng-cloak>
+<div ng-cloak ng-if="initiative.currentTotal">
     <h3>
         {{ initiative.currentTotal/500 | number:0 }}% {{ initiative.currentTotal }}/50000
     </h3>
@@ -6,9 +6,11 @@
     <p>{{ initiative.name.fill }}</p>
     <p><a href="{{ initiative.url }}">Aloite kansalaisaloite.fi:ssä</a></p>
 
-    <initiative-chart-single initiative="initiative">
-        <div id="initiative-chart-fulltime" style="width: 100%; height: 400px;"></div>
-    </initiative-chart-single>
+    <div style="height: 400px">
+        <initiative-chart-single initiative="initiative" ng-if="initiative.support">
+            <div id="initiative-chart-fulltime" style="width: 100%; height: 400px;"></div>
+        </initiative-chart-single>
+    </div>
 
     <div class="row">
         <div class="col-md-4">

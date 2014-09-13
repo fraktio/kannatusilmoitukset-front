@@ -16,6 +16,9 @@
                         $scope.header = {
                             fi: 'Viimeisten kahden viikon aikana kannatetuimmat aloitteet'
                         };
+                        $scope.list = {
+                            fastest: 0
+                        };
 
                         $scope.initiatives = ListData
                             .then(function(initiatives) {
@@ -30,7 +33,11 @@
                                 });
                             });
 
-                        $scope.fastest = $scope.initiatives.then(fastestTwoWeek);
+                        $scope.initiatives
+                            .then(fastestTwoWeek)
+                            .then(function(fastest) {
+                                $scope.list.fastest = fastest;
+                            });
                     }],
                     templateUrl: '/templates/list.html'
                 })
@@ -38,6 +45,9 @@
                     controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
                         $scope.header = {
                             fi: 'Koko keräysaikanaan kannatetuimmat aloitteet'
+                        };
+                        $scope.list = {
+                            fastest: 0
                         };
 
                         $scope.initiatives = ListData.then(function(initiatives) {
@@ -51,14 +61,22 @@
                                 .value();
                         });
 
-                        $scope.fastest = $scope.initiatives.then(histories).then(fastestTwoWeek);
+                        $scope.initiatives
+                            .then(histories)
+                            .then(fastestTwoWeek)
+                            .then(function(fastest) {
+                                $scope.list.fastest = fastest;
+                            });
                     }],
                     templateUrl: '/templates/list.html'
                 })
                 .when('/lista/paattyneet/:num', {
-                    controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
+                    controller: ['$scope', 'ListData', function($scope, ListData) {
                         $scope.header = {
                             fi: 'Kannatetuimmat päättyneet aloitteet'
+                        };
+                        $scope.list = {
+                            hideTwoWeek: true
                         };
 
                         $scope.initiatives = ListData.then(function(initiatives) {
@@ -71,8 +89,6 @@
                                 })
                                 .value();
                         });
-
-                        $scope.fastest = $scope.initiatives.then(histories).then(fastestTwoWeek);
                     }],
                     templateUrl: '/templates/list.html'
                 });
