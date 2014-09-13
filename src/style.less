@@ -7,11 +7,10 @@
 @font-family-base:        @font-family-sans-serif;
 
 html {
-    min-width: 600px;
     overflow-y: scroll;
 }
 body {
-    background-image: url('/assets/images/background.png');
+    background: white;
     margin-top: 10px;
 }
 
@@ -69,44 +68,16 @@ body > .goog-tooltip {
 table {
   margin-top: 20px;
 
-  &.table-bordered th, &.table-bordered td {
-    max-width: 150px;
-    overflow: hidden;
-  }
-
   &.initiatives {
     td {
-      a {
-        display: block;
-        width: 100%;
-      }
+      cursor: pointer;
     }
   }
 }
 
 .progress {
+    height: 5px;
     margin-bottom: 0;
-    height: 25px;
-    font-size: 12px;
-}
-
-.aika {
-    height: 3px;
-}
-
-.progress p {
-    display: inline-block;
-    color: #5DB75D;
-    padding: 4px 0 0 5px;
-}
-
-.progress .progress-bar-success p {
-    color: white;
-    display: block;
-    margin: 3px 5px 0 0;
-    padding: 0;
-    text-align: right;
-    text-shadow: none;
 }
 
 .navbar {

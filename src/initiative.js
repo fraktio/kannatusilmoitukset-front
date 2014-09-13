@@ -95,7 +95,7 @@
                     dataTable: data
                 });
                 chart.setOptions({
-                    'backgroundColor': 'whiteSmoke',
+                    'backgroundColor': 'white',
                     'hAxis': {
                         'format': 'MM.yyyy',
                         'minValue': new Date(initiative.startDate),

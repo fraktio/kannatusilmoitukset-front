@@ -9,13 +9,26 @@
     };
 
     angular.module('lists', ['ngRoute', 'data'])
+        .directive('initiativesList', function() {
+            return {
+                restrict: 'E',
+                replace: true,
+                scope: {
+                    initiatives: '=',
+                    list: '='
+                },
+                controller: ['$scope', '$location', function($scope, $location) {
+                    $scope.showInitiative = function(initiative) {
+                        $location.path(initiative.localUrl);
+                    };
+                }],
+                templateUrl: '/templates/list.html'
+            };
+        })
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/', {
                     controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
-                        $scope.header = {
-                            fi: 'Viimeisten kahden viikon aikana kannatetuimmat aloitteet'
-                        };
                         $scope.list = {
                             fastest: 0
                         };
@@ -39,13 +52,12 @@
                                 $scope.list.fastest = fastest;
                             });
                     }],
-                    templateUrl: '/templates/list.html'
+                    template:
+                        '<h3>Viimeisten kahden viikon aikana kannatetuimmat aloitteet</h3>' +
+                        '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>'
                 })
                 .when('/lista/kannatetuimmat/:num', {
                     controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
-                        $scope.header = {
-                            fi: 'Koko keräysaikanaan kannatetuimmat aloitteet'
-                        };
                         $scope.list = {
                             fastest: 0
                         };
@@ -68,13 +80,12 @@
                                 $scope.list.fastest = fastest;
                             });
                     }],
-                    templateUrl: '/templates/list.html'
+                    template:
+                        '<h3>Koko keräysaikanaan kannatetuimmat aloitteet</h3>' +
+                        '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>'
                 })
                 .when('/lista/paattyneet/:num', {
                     controller: ['$scope', 'ListData', function($scope, ListData) {
-                        $scope.header = {
-                            fi: 'Kannatetuimmat päättyneet aloitteet'
-                        };
                         $scope.list = {
                             hideTwoWeek: true
                         };
@@ -90,7 +101,9 @@
                                 .value();
                         });
                     }],
-                    templateUrl: '/templates/list.html'
+                    template:
+                        '<h3>Kannatetuimmat päättyneet aloitteet</h3>' +
+                        '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>'
                 });
         }]);
 }());

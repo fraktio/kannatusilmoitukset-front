@@ -1,6 +1,4 @@
-<h3 ng-cloak>{{ header.fi }}</h3>
-
-<table class="table table-bordered table-hover initiatives" ng-cloak>
+<table class="table table-hover table-condensed initiatives" ng-cloak ng-if="initiatives">
     <thead>
     <tr>
         <th>#</th>
@@ -11,40 +9,30 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="(i, initiative) in initiatives">
+    <tr ng-repeat="(i, initiative) in initiatives" ng-click="showInitiative(initiative)">
         <td>{{ i + 1 }}</td>
-        <td><a href="{{ initiative.localUrl }}">{{ initiative.name.fill }}</a></td>
+        <td><a>{{ initiative.name.fill }}</a></td>
         <td ng-if="!list.hideTwoWeek">
             <div class="clearfix">
                 <div class="progress">
                     <div class="progress-bar progress-bar-success" ng-style="{ width: '' + (initiative.twoWeekSupport / list.fastest * 100) + '%' }">
-                        <p ng-show="initiative.twoWeekSupport / list.fastest >= 0.15">
-                            {{ initiative.twoWeekSupport }}
-                        </p>
                     </div>
-                    <p ng-show="initiative.twoWeekSupport / list.fastest < 0.15">
-                        {{ initiative.twoWeekSupport }}
-                    </p>
                 </div>
+                {{ initiative.twoWeekSupport }}
             </div>
         </td>
         <td>
             <div class="clearfix">
                 <div class="progress">
                     <div class="progress-bar progress-bar-success" ng-style="{ width: '' + initiative.totalPercentage + '%' }">
-                        <p ng-show="initiative.totalPercentage >= 15">
-                            {{ initiative.currentTotal }}
-                        </p>
                     </div>
-                    <p ng-show="initiative.totalPercentage < 15">
-                        {{ initiative.currentTotal }}
-                    </p>
                 </div>
+                {{ initiative.currentTotal }}
             </div>
         </td>
         <td>
             <div class="clearfix">
-                <div class="aika progress">
+                <div class="progress">
                     <div
                         class="progress-bar"
                         ng-class="{'progress-bar-warning': initiative.donePercentage > 70 && initiative.donePercentage < 85, 'progress-bar-danger': initiative.donePercentage >= 85}"

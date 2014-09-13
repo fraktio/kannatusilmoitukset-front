@@ -144,7 +144,7 @@
                         dataTable: dataTable
                     });
                     wrapper.setOptions({
-                        'backgroundColor': 'whiteSmoke',
+                        'backgroundColor': 'white',
                         'chartArea': {
                             'top': 10,
                             'left': 65
