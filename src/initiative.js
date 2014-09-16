@@ -11,13 +11,17 @@
                             $scope.host = $location.host();
                             var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                             window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-                            $scope.initiative = ListData
+                            ListData
                                 .then(function(initiatives) {
                                     return _(initiatives).find(function(initiative) {
                                         return initiative.id === id;
                                     });
-                                });
-                            $scope.initiative.then(history);
+                                })
+                                .then(function(initiative) {
+                                    $scope.initiative = initiative;
+                                    return initiative;
+                                })
+                                .then(history);
                         }],
                     templateUrl: '/templates/initiatives-one.html'
                 });

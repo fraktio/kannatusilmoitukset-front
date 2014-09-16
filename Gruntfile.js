@@ -45,7 +45,7 @@
             },
             concat: {
                 options: {
-                    separator: ';'
+                    separator: ';\n'
                 },
                 uglified: {
                     src: [
@@ -53,7 +53,6 @@
                         'bower_components/underscore/underscore-min.js',
                         'bower_components/angular/angular.min.js',
                         'bower_components/angular-route/angular-route.min.js',
-                        'bower_components/spin.js/dist/spin.min.js',
                         'temp/**/*.js'
                     ],
                     dest: 'temp/kannatusilmoitukset.min.js'
@@ -88,7 +87,10 @@
                 },
                 dist: {
                     files: {
-                        'temp/kannatusilmoitukset.min.js': ['src/**/*.js']
+                        'temp/kannatusilmoitukset.min.js': [
+                            'bower_components/spin.js/spin.js',
+                            'src/**/*.js'
+                        ]
                     }
                 }
             },

@@ -33,7 +33,7 @@
                             fastest: 0
                         };
 
-                        $scope.initiatives = ListData
+                        ListData
                             .then(function(initiatives) {
                                 return _(initiatives).filter(function(initiative) {
                                     return initiative && new Date(initiative.endDate) > Date.now();
@@ -44,9 +44,11 @@
                                 return _(initiatives).sortBy(function(initiative) {
                                     return -initiative.twoWeekSupport;
                                 });
-                            });
-
-                        $scope.initiatives
+                            })
+                            .then(function(initiatives) {
+                                $scope.initiatives = initiatives;
+                                return initiatives;
+                            })
                             .then(fastestTwoWeek)
                             .then(function(fastest) {
                                 $scope.list.fastest = fastest;
@@ -56,24 +58,27 @@
                         '<h3>Viimeisten kahden viikon aikana kannatetuimmat aloitteet</h3>' +
                         '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>'
                 })
-                .when('/lista/kannatetuimmat/:num', {
+                .when('/lista/kannatetuimmat/:num?', {
                     controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
                         $scope.list = {
                             fastest: 0
                         };
 
-                        $scope.initiatives = ListData.then(function(initiatives) {
-                            return _.chain(initiatives)
-                                .filter(function(initiative) {
-                                    return new Date(initiative.endDate) > Date.now();
-                                })
-                                .sortBy(function(initiative) {
-                                    return -initiative.currentTotal;
-                                })
-                                .value();
-                        });
-
-                        $scope.initiatives
+                        ListData
+                            .then(function(initiatives) {
+                                return _.chain(initiatives)
+                                    .filter(function(initiative) {
+                                        return new Date(initiative.endDate) > Date.now();
+                                    })
+                                    .sortBy(function(initiative) {
+                                        return -initiative.currentTotal;
+                                    })
+                                    .value();
+                            })
+                            .then(function(initiatives) {
+                                $scope.initiatives = initiatives;
+                                return initiatives;
+                            })
                             .then(histories)
                             .then(fastestTwoWeek)
                             .then(function(fastest) {
@@ -84,22 +89,27 @@
                         '<h3>Koko keräysaikanaan kannatetuimmat aloitteet</h3>' +
                         '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>'
                 })
-                .when('/lista/paattyneet/:num', {
+                .when('/lista/paattyneet/:num?', {
                     controller: ['$scope', 'ListData', function($scope, ListData) {
                         $scope.list = {
                             hideTwoWeek: true
                         };
 
-                        $scope.initiatives = ListData.then(function(initiatives) {
-                            return _.chain(initiatives)
-                                .filter(function(initiative) {
-                                    return new Date(initiative.endDate) <= Date.now();
-                                })
-                                .sortBy(function(initiative) {
-                                    return -initiative.currentTotal;
-                                })
-                                .value();
-                        });
+                        ListData
+                            .then(function(initiatives) {
+                                return _.chain(initiatives)
+                                    .filter(function(initiative) {
+                                        return new Date(initiative.endDate) <= Date.now();
+                                    })
+                                    .sortBy(function(initiative) {
+                                        return -initiative.currentTotal;
+                                    })
+                                    .value();
+                            })
+                            .then(function(initiatives) {
+                                $scope.initiatives = initiatives;
+                                return initiatives;
+                            });
                     }],
                     template:
                         '<h3>Kannatetuimmat päättyneet aloitteet</h3>' +
