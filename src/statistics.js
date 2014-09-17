@@ -2,7 +2,7 @@
 (function() {
     'use strict';
 
-    angular.module('statistics', ['ngRoute', 'data'])
+    angular.module('statistics', ['ngRoute', 'data', 'spinner'])
         .factory('Morris', ['$q', function($q) {
             var deferred = $q.defer();
             yepnope({
@@ -25,7 +25,7 @@
                         histories().then(function(initiatives) {
                             Morris.then(function(Morris) {
                                 $scope.weekdayDonut = new Morris.Donut({
-                                    element: jQuery('.statistics .weekday'),
+                                    element: jQuery('.statistics .weekday').html(''),
                                     data: _(initiatives).reduce(function(data, initiative) {
                                         _(initiative.support).each(function(value, index, list) {
                                             if (index !== 0) {
@@ -44,7 +44,7 @@
                                     ])
                                 });
                                 $scope.hourLine = new Morris.Line({
-                                    element: jQuery('.statistics .hour'),
+                                    element: jQuery('.statistics .hour').html(''),
                                     data: _(initiatives).reduce(function(data, initiative) {
                                         _(initiative.support).each(function(value, index, list) {
                                             if (index !== 0) {

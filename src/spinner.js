@@ -18,8 +18,16 @@
                 hwaccel: false,
                 className: 'spinner',
                 zIndex: 2e9,
-                top: '200',
-                left: 'auto'
+                top: '200px',
+                left: '50%'
             }).spin(element);
-        });
+        })
+        .directive('spinner', ['spinner', function(spinner) {
+            return {
+                restrict: 'A',
+                link: function(scope, element) {
+                    spinner(element[0]);
+                }
+            };
+        }]);
 }());

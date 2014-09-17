@@ -2,7 +2,7 @@
 (function() {
     'use strict';
 
-    angular.module('initiative', ['ngRoute', 'data', 'chartapi'])
+    angular.module('initiative', ['ngRoute', 'data', 'chartapi', 'spinner'])
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/:id/:pretty', {
@@ -34,13 +34,16 @@
                 scope: {
                     initiative: '=initiative'
                 },
-                controller: ['$scope', 'drawSingle', 'CoreCharts', function($scope, drawSingle, CoreCharts) {
+                controller: ['$scope', 'drawSingle', 'CoreCharts', '$timeout',
+                function($scope, drawSingle, CoreCharts, $timeout) {
                     $scope.$watch('initiative', function(initiative) {
                         if (!_.isObject(initiative) || !_.isString(initiative.id)) {
                             return;
                         }
                         CoreCharts.then(function() {
-                            drawSingle('initiative-chart-fulltime', initiative);
+                            $timeout(function() {
+                                drawSingle('initiative-chart-fulltime', initiative);
+                            });
                         });
                     });
                 }],

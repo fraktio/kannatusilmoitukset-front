@@ -14,16 +14,17 @@
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/graafi', {
-                    controller: ['$scope', '$location', 'Graph', 'spinner',
-                        function($scope, $location, Graph, spinner) {
-                            spinner(document.getElementById('chart_div'));
+                    controller: ['$scope', '$location', 'Graph', '$timeout',
+                        function($scope, $location, Graph, $timeout) {
                             Graph.setLocationSetter(function(path) {
                                 $location.path(path);
                             });
-                            Graph.drawWithData('chart_div');
+                            $timeout(function() {
+                                Graph.drawWithData('chart_div');
+                            });
                         }
                     ],
-                    template: '<div id="chart_div">Lasketaan kannatusilmoituksia...</div>'
+                    template: '<div id="chart_div" spinner></div>'
                 });
         }])
         .factory('GraphData', ['$filter', function($filter) {
