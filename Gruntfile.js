@@ -1,44 +1,16 @@
-/* global module */
+/* global module, require */
 (function () {
     "use strict";
 
     module.exports = function (grunt) {
+        require('jit-grunt')(grunt);
 
         // Project configuration.
         grunt.initConfig({
             pkg:grunt.file.readJSON('package.json'),
             jshint: {
-                files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
-                options: {
-                    bitwise: true,
-                    camelcase: true,
-                    curly: true,
-                    eqeqeq: true,
-                    forin: true,
-                    immed: true,
-                    indent: 4,
-                    latedef: true,
-                    newcap: true,
-                    noarg: true,
-                    noempty: true,
-                    nonew: true,
-                    plusplus: true,
-                    // quotmark: true,
-                    undef: true,
-                    unused: true,
-                    strict: true,
-                    trailing: true,
-                    maxparams: 5,
-                    maxdepth: 4,
-                    maxstatements: 17, // todo
-                    maxcomplexity: 10,
-                    maxlen: 120,
-
-                    browser: true,
-
-                    globals: {
-                    }
-                }
+                files: ['*.js', '*.json', 'src/**/*.js'],
+                options: {jshintrc: 'jshint.json'}
             },
             clean: {
                 'default': ['temp']
@@ -136,18 +108,6 @@
                 tasks: ['build']
             }
         });
-
-        [
-            'grunt-contrib-uglify',
-            'grunt-contrib-jshint',
-            'grunt-contrib-watch',
-            'grunt-contrib-concat',
-            'grunt-contrib-copy',
-            'grunt-contrib-less',
-            'grunt-contrib-clean',
-            'grunt-contrib-cssmin',
-            'grunt-hashres'
-        ].forEach(grunt.loadNpmTasks);
 
         grunt.registerTask(
             'build',
