@@ -21,7 +21,6 @@
                 },
                 uglified: {
                     src: [
-                        'bower_components/yepnope/yepnope*min.js',
                         'bower_components/underscore/underscore-min.js',
                         'bower_components/angular/angular.min.js',
                         'bower_components/angular-route/angular-route.min.js',
@@ -36,7 +35,7 @@
                         {
                             expand: true,
                             cwd: 'src/',
-                            src: '**/*.html',
+                            src: '**/*.{html,png}',
                             dest: 'temp/'
                         }
                     ]
@@ -53,16 +52,15 @@
                 }
             },
 
-            uglify: {
-                options: {
-                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-                },
-                dist: {
-                    files: {
-                        'temp/kannatusilmoitukset.min.js': [
-                            'bower_components/spin.js/spin.js',
-                            'src/**/*.js'
-                        ]
+            requirejs: {
+                compile: {
+                    options: {
+                        baseUrl: 'src/',
+                        name: 'app',
+                        include: '../node_modules/grunt-contrib-requirejs/node_modules/requirejs/require',
+                        optimize: 'uglify',
+                        preserveLicenseComments: false,
+                        out: "temp/kannatusilmoitukset.min.js"
                     }
                 }
             },
@@ -114,7 +112,7 @@
             [
                 'clean',
                 'jshint',
-                'uglify',
+                'requirejs',
                 'concat:uglified',
                 'less',
                 'cssmin',

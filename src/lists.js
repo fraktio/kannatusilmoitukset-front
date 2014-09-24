@@ -1,5 +1,5 @@
 /* global angular, _ */
-(function() {
+define(['data'], function () {
     'use strict';
 
     var fastestTwoWeek = function (initiatives) {
@@ -116,4 +116,4 @@
                         '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>'
                 });
         }]);
-}());
+});

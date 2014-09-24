@@ -1,5 +1,5 @@
 /* global angular, _, google */
-(function() {
+define(['data', 'spinner', 'chartapi'], function() {
     'use strict';
 
     var prettyUrlText = function(text) {
@@ -194,4 +194,4 @@
             };
             return Graph;
         }]);
-}());
+});

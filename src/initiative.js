@@ -1,5 +1,5 @@
 /* global angular, _, window, google */
-(function() {
+define(['data', 'chartapi', 'spinner'], function() {
     'use strict';
 
     angular.module('initiative', ['ngRoute', 'data', 'chartapi', 'spinner'])
@@ -140,4 +140,4 @@
                 chart.draw();
             };
         }]);
-}());
+});

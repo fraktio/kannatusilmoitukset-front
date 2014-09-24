@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "dependencies": {
     "underscore": "1.7.0",
-    "yepnope": "1.5.4",
     "angular": "1.2.24",
     "angular-route": "1.2.24",
     "spin.js": "2.0.1",

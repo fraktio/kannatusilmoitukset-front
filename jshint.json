@@ -25,5 +25,7 @@
     "browser": true,
 
     "globals": {
+        "require": true,
+        "define": true
     }
 }

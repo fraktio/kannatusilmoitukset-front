@@ -1,21 +1,30 @@
-/* global angular, _, yepnope, window, jQuery */
-(function() {
+/* global angular, _, jQuery */
+define(['data', 'spinner'], function() {
     'use strict';
 
     angular.module('statistics', ['ngRoute', 'data', 'spinner'])
         .factory('Morris', ['$q', function($q) {
             var deferred = $q.defer();
-            yepnope({
-                load: [
-                    '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.css',
-                    '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
-                    '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                    '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'
+
+            var link = document.createElement("link");
+            link.type = "text/css";
+            link.rel = "stylesheet";
+            link.href = '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.css';
+            document.getElementsByTagName("head")[0].appendChild(link);
+
+            require(
+                [
+                    '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js',
+                    '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'
                 ],
-                complete: function() {
-                    deferred.resolve(window.Morris);
+                function (Raphael) {
+                    window.Raphael = Raphael;
+                    require(['//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'], function () {
+                        deferred.resolve(window.Morris);
+                    });
                 }
-            });
+            );
+
             return deferred.promise;
         }])
         .config(['$routeProvider', function($routeProvider) {
@@ -73,4 +82,4 @@
                     templateUrl: '/templates/statistics.html'
                 });
         }]);
-}());
+});
