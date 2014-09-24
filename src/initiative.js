@@ -1,8 +1,8 @@
-/* global angular, _, window, google */
+/* global angular, _, window, google, Bacon */
 define(['data', 'chartapi', 'spinner'], function() {
     'use strict';
 
-    angular.module('initiative', ['ngRoute', 'data', 'chartapi', 'spinner'])
+    angular.module('initiative', ['ngRoute', 'data', 'chartapi', 'spinner', 'angular-bacon'])
         .config(['$routeProvider', function($routeProvider) {
             $routeProvider
                 .when('/:id/:pretty', {
@@ -11,17 +11,18 @@ define(['data', 'chartapi', 'spinner'], function() {
                             $scope.host = $location.host();
                             var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
                             window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-                            ListData
-                                .then(function(initiatives) {
+                            Bacon.fromPromise(ListData)
+                                .delay()
+                                .map(function(initiatives) {
                                     return _(initiatives).find(function(initiative) {
                                         return initiative.id === id;
                                     });
                                 })
-                                .then(function(initiative) {
-                                    $scope.initiative = initiative;
-                                    return initiative;
-                                })
-                                .then(history);
+                                .digest($scope, 'initiative')
+                                .delay()
+                                .map(history)
+                                .flatMap(Bacon.fromPromise)
+                                .digest($scope, 'initiative');
                         }],
                     templateUrl: '/templates/initiatives-one.html'
                 });

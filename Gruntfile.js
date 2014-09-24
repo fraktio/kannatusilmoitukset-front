@@ -22,8 +22,10 @@
                 uglified: {
                     src: [
                         'bower_components/underscore/underscore-min.js',
+                        'bower_components/bacon/dist/Bacon.min.js',
                         'bower_components/angular/angular.min.js',
                         'bower_components/angular-route/angular-route.min.js',
+                        'bower_components/angular-bacon/dist/angular-bacon.min.js',
                         'temp/**/*.js'
                     ],
                     dest: 'temp/kannatusilmoitukset.min.js'

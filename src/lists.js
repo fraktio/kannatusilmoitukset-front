@@ -1,4 +1,4 @@
-/* global angular, _ */
+/* global angular, _, Bacon */
 define(['data'], function () {
     'use strict';
 
@@ -8,7 +8,7 @@ define(['data'], function () {
         }));
     };
 
-    angular.module('lists', ['ngRoute', 'data'])
+    angular.module('lists', ['ngRoute', 'data', 'angular-bacon'])
         .directive('initiativesList', function() {
             return {
                 restrict: 'E',
@@ -33,26 +33,24 @@ define(['data'], function () {
                             fastest: 0
                         };
 
-                        ListData
-                            .then(function(initiatives) {
+                        Bacon.fromPromise(ListData)
+                            .delay()
+                            .map(function(initiatives) {
                                 return _(initiatives).filter(function(initiative) {
                                     return initiative && new Date(initiative.endDate) > Date.now();
                                 });
                             })
-                            .then(histories)
-                            .then(function(initiatives) {
+                            .map(histories)
+                            .flatMap(Bacon.fromPromise)
+                            .map(function(initiatives) {
                                 return _(initiatives).sortBy(function(initiative) {
                                     return -initiative.twoWeekSupport;
                                 });
                             })
-                            .then(function(initiatives) {
-                                $scope.initiatives = initiatives;
-                                return initiatives;
-                            })
-                            .then(fastestTwoWeek)
-                            .then(function(fastest) {
-                                $scope.list.fastest = fastest;
-                            });
+                            .digest($scope, 'initiatives')
+                            .delay()
+                            .map(fastestTwoWeek)
+                            .digest($scope, 'list.fastest');
                     }],
                     template:
                         '<h3>Viimeisten kahden viikon aikana kannatetuimmat aloitteet</h3>' +
@@ -64,8 +62,9 @@ define(['data'], function () {
                             fastest: 0
                         };
 
-                        ListData
-                            .then(function(initiatives) {
+                        Bacon.fromPromise(ListData)
+                            .delay()
+                            .map(function(initiatives) {
                                 return _.chain(initiatives)
                                     .filter(function(initiative) {
                                         return new Date(initiative.endDate) > Date.now();
@@ -75,15 +74,12 @@ define(['data'], function () {
                                     })
                                     .value();
                             })
-                            .then(function(initiatives) {
-                                $scope.initiatives = initiatives;
-                                return initiatives;
-                            })
-                            .then(histories)
-                            .then(fastestTwoWeek)
-                            .then(function(fastest) {
-                                $scope.list.fastest = fastest;
-                            });
+                            .digest($scope, 'initiatives')
+                            .delay()
+                            .map(histories)
+                            .flatMap(Bacon.fromPromise)
+                            .map(fastestTwoWeek)
+                            .digest($scope, 'list.fastest');
                     }],
                     template:
                         '<h3>Koko keräysaikanaan kannatetuimmat aloitteet</h3>' +
@@ -95,8 +91,9 @@ define(['data'], function () {
                             hideTwoWeek: true
                         };
 
-                        ListData
-                            .then(function(initiatives) {
+                        Bacon.fromPromise(ListData)
+                            .delay()
+                            .map(function(initiatives) {
                                 return _.chain(initiatives)
                                     .filter(function(initiative) {
                                         return new Date(initiative.endDate) <= Date.now();
@@ -106,10 +103,7 @@ define(['data'], function () {
                                     })
                                     .value();
                             })
-                            .then(function(initiatives) {
-                                $scope.initiatives = initiatives;
-                                return initiatives;
-                            });
+                            .digest($scope, 'initiatives');
                     }],
                     template:
                         '<h3>Kannatetuimmat päättyneet aloitteet</h3>' +
