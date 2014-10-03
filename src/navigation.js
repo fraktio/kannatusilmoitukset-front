@@ -11,8 +11,8 @@
                         {href: '/', name: 'Nousijat'},
                         {href: '/lista/kannatetuimmat/', name: 'Kannatetuimmat'},
                         {href: '/lista/paattyneet/', name: 'Päättyneet'},
-                        {href: '/graafi', name: 'Graafi (6kk)'},
-                        {href: '/tilastot', name: 'Tilastot'}
+                        {href: '/graafi', name: 'Graafi (6kk)', mobileHide: true},
+                        {href: '/tilastot', name: 'Tilastot', mobileHide: true}
                     ];
                     $scope.location = $location;
                 }],

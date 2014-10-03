@@ -1,7 +1,7 @@
 <div class="navbar">
     <div class="navbar-inner">
         <ul class="nav nav-pills">
-            <li ng-repeat="link in links" ng-class="{active: link.href == location.path()}">
+            <li ng-repeat="link in links" ng-class="{active: link.href == location.path(), 'hidden-xs': link.mobileHide}">
                 <a href="{{ link.href }}">{{ link.name }}</a>
             </li>
         </ul>
