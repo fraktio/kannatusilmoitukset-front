@@ -1,16 +1,16 @@
 <table class="table table-hover table-condensed initiatives" ng-cloak ng-if="initiatives">
     <thead>
     <tr>
-        <th>#</th>
+        <th class="hidden-xs">#</th>
         <th>Aloite</th>
-        <th ng-if="!list.hideTwoWeek">Kahden viikon nousu</th>
-        <th>Kannatus&shy;ilmoitukset</th>
-        <th>Keräysaika</th>
+        <th ng-if="!list.hideTwoWeek"><span class="hidden-xs">Kahden viikon nousu</span><span class="visible-xs">Nousu</span></th>
+        <th><span class="hidden-xs">Kannatus&shy;ilmoitukset</span><span class="visible-xs">Kannatus</span></th>
+        <th class="hidden-xs">Keräysaika</th>
     </tr>
     </thead>
     <tbody>
     <tr ng-repeat="(i, initiative) in initiatives" ng-click="showInitiative(initiative)">
-        <td>{{ i + 1 }}</td>
+        <td class="hidden-xs">{{ i + 1 }}</td>
         <td><a>{{ initiative.name.fill }}</a></td>
         <td ng-if="!list.hideTwoWeek">
             <div class="clearfix">
@@ -30,7 +30,7 @@
                 {{ initiative.currentTotal }}
             </div>
         </td>
-        <td>
+        <td class="hidden-xs">
             <div class="clearfix">
                 <div class="progress">
                     <div
