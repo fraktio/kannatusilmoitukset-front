@@ -58,7 +58,7 @@
                 compile: {
                     options: {
                         baseUrl: 'src/',
-                        name: 'app',
+                        name: 'citizens-initiatives/citizens-initiatives',
                         include: '../node_modules/grunt-contrib-requirejs/node_modules/requirejs/require',
                         optimize: 'uglify',
                         preserveLicenseComments: false,

@@ -1,5 +1,5 @@
 /* global angular, _ */
-(function() {
+define([], function() {
     'use strict';
 
     var timeParser = function(time) {
@@ -133,5 +133,4 @@
                 return $q.all(_(initiatives).map(history));
             };
         }]);
-}());
-
+});

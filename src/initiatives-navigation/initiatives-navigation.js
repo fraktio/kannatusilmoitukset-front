@@ -2,8 +2,8 @@
 (function() {
     'use strict';
 
-    angular.module('navigation', [])
-        .directive('initiativesNav', function() {
+    angular.module('initiatives-navigation', [])
+        .directive('initiativesNavigation', function() {
             return {
                 restrict: 'A',
                 controller: ['$scope', '$location', function($scope, $location) {
@@ -16,7 +16,7 @@
                     ];
                     $scope.location = $location;
                 }],
-                templateUrl: '/templates/initiatives-nav.html'
+                templateUrl: '/initiatives-navigation/initiatives-navigation.html'
             };
         });
 }());

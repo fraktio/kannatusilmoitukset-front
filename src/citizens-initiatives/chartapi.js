@@ -1,5 +1,5 @@
 /* global angular */
-(function() {
+define([], function() {
     'use strict';
 
     angular.module('chartapi', [])
@@ -17,4 +17,4 @@
 
             return deferred.promise;
         }]);
-}());
+});

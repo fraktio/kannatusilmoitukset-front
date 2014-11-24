@@ -1,5 +1,5 @@
 /* global angular */
-define(['../bower_components/spin.js/spin'], function (Spinner) {
+define(['../../bower_components/spin.js/spin'], function (Spinner) {
     'use strict';
 
     angular.module('spinner', [])

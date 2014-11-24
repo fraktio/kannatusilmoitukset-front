@@ -1,5 +1,5 @@
 /* global angular, _, google */
-define(['data', 'spinner', 'chartapi'], function() {
+define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-initiatives/spinner'], function() {
     'use strict';
 
     var prettyUrlText = function(text) {
@@ -10,23 +10,22 @@ define(['data', 'spinner', 'chartapi'], function() {
             .replace(/[^a-z0-9]+/g, '-');
     };
 
-    angular.module('graph', ['ngRoute', 'spinner', 'data', 'chartapi'])
-        .config(['$routeProvider', function($routeProvider) {
-            $routeProvider
-                .when('/graafi', {
-                    controller: ['$scope', '$location', 'Graph', '$timeout',
-                        function($scope, $location, Graph, $timeout) {
-                            Graph.setLocationSetter(function(path) {
-                                $location.path(path);
-                            });
-                            $timeout(function() {
-                                Graph.drawWithData('chart_div');
-                            });
-                        }
-                    ],
-                    template: '<div id="chart_div" spinner></div>'
-                });
-        }])
+    angular.module('initiatives-graph', ['ngRoute', 'spinner', 'data', 'chartapi'])
+        .directive('initiativesGraph', function () {
+            return {
+                template: '<div id="chart_div" spinner></div>',
+                controller: ['$scope', '$location', 'Graph', '$timeout',
+                    function($scope, $location, Graph, $timeout) {
+                        Graph.setLocationSetter(function(path) {
+                            $location.path(path);
+                        });
+                        $timeout(function() {
+                            Graph.drawWithData('chart_div');
+                        });
+                    }
+                ]
+            };
+        })
         .factory('GraphData', ['$filter', function($filter) {
             var formIdPos = function(initiatives) {
                 var idPos = _.chain(initiatives)

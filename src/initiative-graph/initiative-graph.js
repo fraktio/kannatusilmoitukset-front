@@ -1,32 +1,8 @@
-/* global angular, _, window, google, Bacon */
-define(['data', 'chartapi', 'spinner'], function() {
+/* global angular, _, google */
+define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-initiatives/spinner'], function() {
     'use strict';
 
-    angular.module('initiative', ['ngRoute', 'data', 'chartapi', 'spinner', 'angular-bacon'])
-        .config(['$routeProvider', function($routeProvider) {
-            $routeProvider
-                .when('/:id/:pretty', {
-                    controller: ['$routeParams', '$scope', 'ListData', 'history', '$location',
-                        function($routeParams, $scope, ListData, history, $location) {
-                            $scope.host = $location.host();
-                            var id = 'https://www.kansalaisaloite.fi/api/v1/initiatives/' + $routeParams.id;
-                            window._gaq.push(['_trackEvent', 'Initiatives', 'Open', id]);
-                            Bacon.fromPromise(ListData)
-                                .delay()
-                                .map(function(initiatives) {
-                                    return _(initiatives).find(function(initiative) {
-                                        return initiative.id === id;
-                                    });
-                                })
-                                .digest($scope, 'initiative')
-                                .delay()
-                                .map(history)
-                                .flatMap(Bacon.fromPromise)
-                                .digest($scope, 'initiative');
-                        }],
-                    templateUrl: '/templates/initiatives-one.html'
-                });
-        }])
+    angular.module('initiative-graph', ['ngRoute', 'data', 'chartapi', 'spinner', 'angular-bacon'])
         .directive('initiativeChartSingle', function() {
             return {
                 restrict: 'E',
@@ -36,18 +12,18 @@ define(['data', 'chartapi', 'spinner'], function() {
                     initiative: '=initiative'
                 },
                 controller: ['$scope', 'drawSingle', 'CoreCharts', '$timeout',
-                function($scope, drawSingle, CoreCharts, $timeout) {
-                    $scope.$watch('initiative', function(initiative) {
-                        if (!_.isObject(initiative) || !_.isString(initiative.id)) {
-                            return;
-                        }
-                        CoreCharts.then(function() {
-                            $timeout(function() {
-                                drawSingle('initiative-chart-fulltime', initiative);
+                    function($scope, drawSingle, CoreCharts, $timeout) {
+                        $scope.$watch('initiative', function(initiative) {
+                            if (!_.isObject(initiative) || !_.isString(initiative.id)) {
+                                return;
+                            }
+                            CoreCharts.then(function() {
+                                $timeout(function() {
+                                    drawSingle('initiative-chart-fulltime', initiative);
+                                });
                             });
                         });
-                    });
-                }],
+                    }],
                 template: '<div ng-transclude></div>'
             };
         })
