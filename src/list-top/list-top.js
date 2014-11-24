@@ -12,7 +12,7 @@ define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'], funct
         .directive('listTop', function () {
             return {
                 template:
-                    '<h3>Viimeisten kahden viikon aikana kannatetuimmat aloitteet</h3>' +
+                    '<h3>Koko keräysaikanaan kannatetuimmat aloitteet</h3>' +
                     '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>',
 
                 controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {
@@ -23,19 +23,19 @@ define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'], funct
                     Bacon.fromPromise(ListData)
                         .delay()
                         .map(function(initiatives) {
-                            return _(initiatives).filter(function(initiative) {
-                                return initiative && new Date(initiative.endDate) > Date.now();
-                            });
-                        })
-                        .map(histories)
-                        .flatMap(Bacon.fromPromise)
-                        .map(function(initiatives) {
-                            return _(initiatives).sortBy(function(initiative) {
-                                return -initiative.twoWeekSupport;
-                            });
+                            return _.chain(initiatives)
+                                .filter(function(initiative) {
+                                    return new Date(initiative.endDate) > Date.now();
+                                })
+                                .sortBy(function(initiative) {
+                                    return -initiative.currentTotal;
+                                })
+                                .value();
                         })
                         .digest($scope, 'initiatives')
                         .delay()
+                        .map(histories)
+                        .flatMap(Bacon.fromPromise)
                         .map(fastestTwoWeek)
                         .digest($scope, 'list.fastest');
                 }]
