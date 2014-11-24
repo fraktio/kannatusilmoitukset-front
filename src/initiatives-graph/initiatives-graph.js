@@ -1,5 +1,6 @@
-/* global angular, _, google */
-define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-initiatives/spinner'], function() {
+/* global angular, _ */
+define(['citizens-initiatives/data', 'google-visualization/google-visualization', 'citizens-initiatives/spinner'],
+    function() {
     'use strict';
 
     var prettyUrlText = function(text) {
@@ -10,7 +11,7 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
             .replace(/[^a-z0-9]+/g, '-');
     };
 
-    angular.module('initiatives-graph', ['ngRoute', 'spinner', 'data', 'chartapi'])
+    angular.module('initiatives-graph', ['ngRoute', 'spinner', 'data', 'google-visualization'])
         .directive('initiativesGraph', function () {
             return {
                 template: '<div id="chart_div" spinner></div>',
@@ -92,8 +93,8 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
                 }
             };
         }])
-        .factory('Graph', ['ListData', 'histories', 'GraphData', 'CoreCharts',
-            function(ListData, histories, GraphData, CoreCharts) {
+        .factory('Graph', ['ListData', 'histories', 'GraphData', 'GoogleVisualization',
+            function(ListData, histories, GraphData, GoogleVisualization) {
 
             var wrapper = null;
             var locationSetter = null;
@@ -116,19 +117,19 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
                         })
                         .then(histories)
                         .then(function(initiatives) {
-                            CoreCharts.then(function() {
-                                Graph.draw(initiatives, containerId);
+                            GoogleVisualization.then(function(GoogleVisualization) {
+                                Graph.draw(initiatives, containerId, GoogleVisualization);
                             });
                         });
                 },
-                draw: function(data, containerId) {
+                draw: function(data, containerId, GoogleVisualization) {
                     if (document.getElementById(containerId).childElementCount > 1) {
                         return;
                     }
 
                     data = GraphData.googleDataArray(data);
 
-                    var dataTable = new google.visualization.DataTable();
+                    var dataTable = new GoogleVisualization.DataTable();
                     dataTable.addColumn('datetime', data.chart[0][0]);
                     for (var i = 1; i < data.chart[0].length; i += 1) {
                         dataTable.addColumn('number', data.chart[0][i]);
@@ -138,7 +139,7 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
                     data.chart[0] = null;
 
                     dataTable.addRows(data.chart);
-                    wrapper = new google.visualization.ChartWrapper({
+                    wrapper = new GoogleVisualization.ChartWrapper({
                         chartType: 'LineChart',
                         containerId: containerId,
                         dataTable: dataTable
@@ -170,7 +171,7 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
                         'interpolateNulls': true
                     });
 
-                    google.visualization.events.addListener(wrapper, 'select', function() {
+                    GoogleVisualization.events.addListener(wrapper, 'select', function() {
                         if (wrapper.getChart().getSelection().length < 1) {
                             return;
                         }

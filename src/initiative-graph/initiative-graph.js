@@ -1,8 +1,9 @@
-/* global angular, _, google */
-define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-initiatives/spinner'], function() {
+/* global angular, _ */
+define(['citizens-initiatives/data', 'google-visualization/google-visualization', 'citizens-initiatives/spinner'],
+    function() {
     'use strict';
 
-    angular.module('initiative-graph', ['ngRoute', 'data', 'chartapi', 'spinner', 'angular-bacon'])
+    angular.module('initiative-graph', ['ngRoute', 'data', 'google-visualization', 'spinner', 'angular-bacon'])
         .directive('initiativeChartSingle', function() {
             return {
                 restrict: 'E',
@@ -11,15 +12,15 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
                 scope: {
                     initiative: '=initiative'
                 },
-                controller: ['$scope', 'drawSingle', 'CoreCharts', '$timeout',
-                    function($scope, drawSingle, CoreCharts, $timeout) {
+                controller: ['$scope', 'drawSingle', 'GoogleVisualization', '$timeout',
+                    function($scope, drawSingle, GoogleVisualization, $timeout) {
                         $scope.$watch('initiative', function(initiative) {
                             if (!_.isObject(initiative) || !_.isString(initiative.id)) {
                                 return;
                             }
-                            CoreCharts.then(function() {
+                            GoogleVisualization.then(function(GoogleVisualization) {
                                 $timeout(function() {
-                                    drawSingle('initiative-chart-fulltime', initiative);
+                                    drawSingle('initiative-chart-fulltime', initiative, GoogleVisualization);
                                 });
                             });
                         });
@@ -28,14 +29,14 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
             };
         })
         .factory('drawSingle', ['$filter', function($filter) {
-            return function(containerId, initiative) {
+            return function(containerId, initiative, GoogleVisualization) {
                 if (!document.getElementById(containerId)) {
                     return;
                 }
 
                 var startDate = new Date(initiative.startDate);
 
-                var data = new google.visualization.DataTable();
+                var data = new GoogleVisualization.DataTable();
                 data.addColumn('datetime', 'Time');
                 data.addColumn('number', initiative.name.fill);
                 data.addColumn({type:'boolean',role:'certainty'});
@@ -73,7 +74,7 @@ define(['citizens-initiatives/data', 'citizens-initiatives/chartapi', 'citizens-
 
                 data.addRows(rows);
 
-                var chart = new google.visualization.ChartWrapper({
+                var chart = new GoogleVisualization.ChartWrapper({
                     chartType: 'LineChart',
                     containerId: containerId,
                     dataTable: data
