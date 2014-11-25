@@ -83,19 +83,6 @@ table {
     margin: 15px 0 0 0;
 }
 
-#fb-root {
-    display: none;
-}
-
-.fb-like {
-    z-index: 600;
-    height: 60px;
-}
-
-.fb_iframe_widget, .fb_iframe_widget span, .fb_iframe_widget span iframe[style] {
-    width: 100% !important;
-}
-
 .statistics {
     margin-top: 25px;
 }
@@ -116,4 +103,14 @@ table {
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
+}
+
+[facebook-share] {
+  display: inline;
+
+  iframe {
+    width: 95px;
+    height: 20px;
+    border: 0;
+  }
 }

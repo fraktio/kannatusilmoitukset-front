@@ -12,7 +12,7 @@ define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'], funct
         .directive('listTop', function () {
             return {
                 template:
-                    '<h3>Koko keräysaikanaan kannatetuimmat aloitteet</h3>' +
+                    '<h3>Koko keräysaikanaan kannatetuimmat aloitteet<div facebook-share class="pull-right"></h3>' +
                     '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>',
 
                 controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {

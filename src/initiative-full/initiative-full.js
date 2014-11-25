@@ -5,7 +5,7 @@ define(['initiative-graph/initiative-graph', 'citizens-initiatives/spinner'], fu
     angular.module('initiative-full', ['ngRoute', 'data', 'initiative-graph', 'spinner', 'angular-bacon'])
         .directive('initiativeFull', function () {
             return {
-                templateUrl: '/initiative-full/initiative-full.html',
+                templateUrl: '/initiative-full/initiative-full.html?1',
                 controller: ['$routeParams', '$scope', 'ListData', 'history', '$location',
                     function($routeParams, $scope, ListData, history, $location) {
                         $scope.host = $location.host();

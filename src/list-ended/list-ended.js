@@ -1,12 +1,13 @@
 /* global angular, _, Bacon */
-define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'], function () {
+define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'],
+    function () {
     'use strict';
 
     angular.module('list-ended', ['ngRoute', 'data', 'angular-bacon', 'initiatives-list'])
         .directive('listEnded', function () {
             return {
                 template:
-                    '<h3>Kannatetuimmat päättyneet aloitteet</h3>' +
+                    '<h3>Kannatetuimmat päättyneet aloitteet<div facebook-share class="pull-right"></div></h3>' +
                     '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>',
 
                 controller: ['$scope', 'ListData', function($scope, ListData) {

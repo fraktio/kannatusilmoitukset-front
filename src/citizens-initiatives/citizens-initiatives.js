@@ -7,6 +7,7 @@
         [
             'citizens-initiatives/locale',
             'initiatives-navigation/initiatives-navigation',
+            'facebook-share/facebook-share',
             'list-rising/list-rising',
             'list-top/list-top',
             'list-ended/list-ended',
@@ -20,6 +21,7 @@
                     'citizens-initiatives',
                     [
                         'initiatives-navigation',
+                        'facebook-share',
                         'list-rising',
                         'list-top',
                         'list-ended',
@@ -55,16 +57,5 @@
         ['_trackPageview']
     ];
 
-    window.fbAsyncInit = function() {
-        window.FB.init({
-            appId: '1472730843000242',
-            xfbml: true,
-            version: 'v2.1'
-        });
-    };
-
-    require([
-        '//connect.facebook.net/en_US/sdk.js',
-        '//www.google-analytics.com/ga.js'
-    ]);
+    require(['//www.google-analytics.com/ga.js']);
 }());

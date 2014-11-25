@@ -1,6 +1,7 @@
 <div ng-cloak ng-if="initiative.currentTotal">
     <h3>
         {{ initiative.currentTotal/500 | number:0 }}% {{ initiative.currentTotal }}/50000
+        <div facebook-share class="pull-right"></div>
     </h3>
 
     <p>{{ initiative.name.fill }}</p>
