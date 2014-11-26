@@ -1,16 +1,16 @@
 # kannatusilmoitukset.fi
 
-Front end for the citizens' initiative visualization service kannatusilmoitukset.fi
+Front end for the citizens' initiative visualization service https://kannatusilmoitukset.fi/
 
 ## Data
 
-The initiative support data is currently available in three forms, all updated hourly.
+The initiative support data is currently available in four forms, all updated hourly.
 
 You may use the data for any purpose.
 
 ### Original format with hourly data points
 
-http://kannatusilmoitukset.fi/initiatives-all.json
+https://kannatusilmoitukset.fi/initiatives-all.json
 
 ### Streaked data
 
@@ -18,7 +18,7 @@ A similar format with values streaked:
 
 {'date1':1,'date2':1,'date3':1,'date4':2} -> {'date1':1,'date3':1,'date4':2}
 
-http://kannatusilmoitukset.fi/initiatives-sorted-streaked.json
+https://kannatusilmoitukset.fi/initiatives-sorted-streaked.json
 
 ### Single initiative streaked
 
@@ -28,8 +28,8 @@ http://kannatusilmoitukset.fi/initiatives/33.json
 
 ### Meta + single initiative png
 
-http://kannatusilmoitukset.fi/initiatives/img/meta.json
-http://kannatusilmoitukset.fi/initiatives/img/33.png
+https://kannatusilmoitukset.fi/initiatives/img/meta.json
+https://kannatusilmoitukset.fi/initiatives/img/33.png
 
 ## Installation
 
@@ -48,7 +48,7 @@ Redirect all non-static requests to index.html and make data available, nginx ex
 
         # Make the data under /initiatives/ available
         location /initiatives/ {
-            proxy_pass http://kannatusilmoitukset.fi;
+            proxy_pass https://kannatusilmoitukset.fi;
         }
     }
 
