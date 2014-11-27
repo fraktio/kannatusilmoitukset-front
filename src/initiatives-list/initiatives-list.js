@@ -6,7 +6,6 @@ define(['data-initiatives/data-initiatives'], function () {
         .directive('initiativesList', function() {
             return {
                 restrict: 'E',
-                replace: true,
                 scope: {
                     initiatives: '=',
                     list: '='
