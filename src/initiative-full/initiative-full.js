@@ -1,8 +1,13 @@
 /* global angular, _, window, Bacon */
-define(['initiative-graph/initiative-graph', 'citizens-initiatives/spinner'], function() {
+define(
+    [
+        'data-initiatives/data-initiatives',
+        'initiative-graph/initiative-graph',
+        'spinner-customized/spinner-customized'
+    ], function() {
     'use strict';
 
-    angular.module('initiative-full', ['ngRoute', 'data', 'initiative-graph', 'spinner', 'angular-bacon'])
+    angular.module('initiative-full', ['ngRoute', 'data-initiatives', 'initiative-graph', 'spinner', 'angular-bacon'])
         .directive('initiativeFull', function () {
             return {
                 templateUrl: '/initiative-full/initiative-full.html?1',

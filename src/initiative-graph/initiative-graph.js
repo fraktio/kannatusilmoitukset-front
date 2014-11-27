@@ -1,9 +1,18 @@
 /* global angular, _ */
-define(['citizens-initiatives/data', 'google-visualization/google-visualization', 'citizens-initiatives/spinner'],
+define(
+    [
+        'data-initiatives/data-initiatives',
+        'google-visualization/google-visualization',
+        'spinner-customized/spinner-customized'
+    ],
     function() {
     'use strict';
 
-    angular.module('initiative-graph', ['ngRoute', 'data', 'google-visualization', 'spinner', 'angular-bacon'])
+    angular
+        .module(
+            'initiative-graph',
+            ['ngRoute', 'data-initiatives', 'google-visualization', 'spinner', 'angular-bacon']
+        )
         .directive('initiativeChartSingle', function() {
             return {
                 restrict: 'E',

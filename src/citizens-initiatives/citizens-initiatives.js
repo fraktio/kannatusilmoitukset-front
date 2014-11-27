@@ -5,7 +5,7 @@
     define(
         'app',
         [
-            'citizens-initiatives/locale',
+            'ng-locale-finnish/ng-locale-finnish',
             'initiatives-navigation/initiatives-navigation',
             'facebook-share/facebook-share',
             'list-rising/list-rising',

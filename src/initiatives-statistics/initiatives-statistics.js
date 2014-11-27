@@ -1,8 +1,8 @@
 /* global angular, _, jQuery */
-define(['citizens-initiatives/data', 'citizens-initiatives/spinner'], function() {
+define(['data-initiatives/data-initiatives', 'spinner-customized/spinner-customized'], function() {
     'use strict';
 
-    angular.module('initiatives-statistics', ['ngRoute', 'data', 'spinner'])
+    angular.module('initiatives-statistics', ['ngRoute', 'data-initiatives', 'spinner'])
         .factory('Morris', ['$q', function($q) {
             var deferred = $q.defer();
 

@@ -25,9 +25,9 @@ define([], function() {
             .replace(/[^a-z0-9]+/g, '-');
     };
 
-    angular.module('data', [])
-        .factory('ListData', ['$http', function($http) {
-            var fillInitiative = function(initiative) {
+    angular.module('data-initiative', [])
+        .factory('fillInitiative', [function() {
+            return function(initiative) {
                 initiative = _(initiative).extend({
                     currentTotal: initiative.totalSupportCount,
                     token: initiative.id.match(/\d+$/)[0],
@@ -44,10 +44,6 @@ define([], function() {
 
                 return initiative;
             };
-
-            return $http.get('/initiatives/img/meta.json').then(function(res) {
-                return _(res.data).map(fillInitiative);
-            });
         }])
         .factory('historyData', ['$q', function($q) {
             var canvas = document.createElement('canvas');
@@ -120,17 +116,6 @@ define([], function() {
 
                     return initiative;
                 });
-            };
-        }])
-        .factory('histories', ['ListData', 'history', '$q', function(ListData, history, $q) {
-            return function(initiatives) {
-                if (!initiatives) {
-                    return ListData.then(function(initiatives) {
-                        return $q.all(_(initiatives).map(history));
-                    });
-                }
-
-                return $q.all(_(initiatives).map(history));
             };
         }]);
 });

@@ -1,5 +1,5 @@
 /* global angular, _, Bacon */
-define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'], function () {
+define(['data-initiatives/data-initiatives', 'initiatives-list/initiatives-list'], function () {
     'use strict';
 
     var fastestTwoWeek = function (initiatives) {
@@ -8,7 +8,7 @@ define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'], funct
         }));
     };
 
-    angular.module('list-top', ['ngRoute', 'data', 'angular-bacon', 'initiatives-list'])
+    angular.module('list-top', ['ngRoute', 'data-initiatives', 'angular-bacon', 'initiatives-list'])
         .directive('listTop', function () {
             return {
                 template:

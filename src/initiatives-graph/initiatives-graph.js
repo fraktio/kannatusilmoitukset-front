@@ -1,5 +1,10 @@
 /* global angular, _ */
-define(['citizens-initiatives/data', 'google-visualization/google-visualization', 'citizens-initiatives/spinner'],
+define(
+    [
+        'data-initiatives/data-initiatives',
+        'google-visualization/google-visualization',
+        'spinner-customized/spinner-customized'
+    ],
     function() {
     'use strict';
 
@@ -11,7 +16,7 @@ define(['citizens-initiatives/data', 'google-visualization/google-visualization'
             .replace(/[^a-z0-9]+/g, '-');
     };
 
-    angular.module('initiatives-graph', ['ngRoute', 'spinner', 'data', 'google-visualization'])
+    angular.module('initiatives-graph', ['ngRoute', 'spinner', 'data-initiatives', 'google-visualization'])
         .directive('initiativesGraph', function () {
             return {
                 template: '<div id="chart_div" spinner></div>',

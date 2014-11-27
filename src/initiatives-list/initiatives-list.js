@@ -1,8 +1,8 @@
 /* global angular */
-define([], function () {
+define(['data-initiatives/data-initiatives'], function () {
     'use strict';
 
-    angular.module('initiatives-list', ['ngRoute', 'data', 'angular-bacon'])
+    angular.module('initiatives-list', ['ngRoute', 'data-initiatives', 'angular-bacon'])
         .directive('initiativesList', function() {
             return {
                 restrict: 'E',

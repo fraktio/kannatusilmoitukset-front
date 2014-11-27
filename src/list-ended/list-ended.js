@@ -1,9 +1,9 @@
 /* global angular, _, Bacon */
-define(['citizens-initiatives/data', 'initiatives-list/initiatives-list'],
+define(['data-initiatives/data-initiatives', 'initiatives-list/initiatives-list'],
     function () {
     'use strict';
 
-    angular.module('list-ended', ['ngRoute', 'data', 'angular-bacon', 'initiatives-list'])
+    angular.module('list-ended', ['ngRoute', 'data-initiatives', 'angular-bacon', 'initiatives-list'])
         .directive('listEnded', function () {
             return {
                 template:
