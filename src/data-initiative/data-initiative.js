@@ -52,26 +52,23 @@ define([], function() {
             var context = canvas.getContext('2d');
 
             return function(initiative) {
-                var deferred = $q.defer();
-                var image = document.createElement('img');
+                return $q(function(resolve) {
+                    var image = document.createElement('img');
 
-                image.onload = function() {
-                    context.drawImage(image, 0, 0);
-                    initiative.data = context.getImageData(0, 0, image.width, image.height).data;
-                    deferred.resolve(initiative);
-                };
+                    image.onload = function() {
+                        context.drawImage(image, 0, 0);
+                        initiative.data = context.getImageData(0, 0, image.width, image.height).data;
+                        resolve(initiative);
+                    };
 
-                image.src = '/initiatives/img/' + initiative.token + '.png';
-
-                return deferred.promise;
+                    image.src = '/initiatives/img/' + initiative.token + '.png';
+                });
             };
         }])
         .factory('history', ['historyData', '$q', '$filter', function(historyData, $q, $filter) {
             return function(initiative) {
                 if (initiative.support) {
-                    var deferred = $q.defer();
-                    deferred.resolve(initiative);
-                    return deferred.promise;
+                    return $q(function(resolve) { resolve(initiative); });
                 }
 
                 return historyData(initiative).then(function(initiative) {

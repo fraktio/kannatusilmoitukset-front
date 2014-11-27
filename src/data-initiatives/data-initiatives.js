@@ -10,14 +10,7 @@ define(['data-initiative/data-initiative'], function() {
         }])
         .factory('histories', ['ListData', 'history', '$q', function(ListData, history, $q) {
             return function(inputInitiatives) {
-                var initiatives;
-                if (inputInitiatives) {
-                    var deferred = $q.defer();
-                    deferred.resolve(inputInitiatives);
-                    initiatives = deferred.promise;
-                } else {
-                    initiatives = ListData;
-                }
+                var initiatives = inputInitiatives ? $q(function(resolve) { resolve(inputInitiatives); }) : ListData;
 
                 return initiatives.then(function(initiatives) {
                     return $q.all(_(initiatives).map(history));

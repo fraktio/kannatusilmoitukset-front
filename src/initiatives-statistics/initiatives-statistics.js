@@ -4,28 +4,26 @@ define(['data-initiatives/data-initiatives', 'spinner-customized/spinner-customi
 
     angular.module('initiatives-statistics', ['ngRoute', 'data-initiatives', 'spinner'])
         .factory('Morris', ['$q', function($q) {
-            var deferred = $q.defer();
+            return $q(function(resolve) {
+                var link = document.createElement("link");
+                link.type = "text/css";
+                link.rel = "stylesheet";
+                link.href = '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.css';
+                document.getElementsByTagName("head")[0].appendChild(link);
 
-            var link = document.createElement("link");
-            link.type = "text/css";
-            link.rel = "stylesheet";
-            link.href = '//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.css';
-            document.getElementsByTagName("head")[0].appendChild(link);
-
-            require(
-                [
-                    '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js',
-                    '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'
-                ],
-                function (Raphael) {
-                    window.Raphael = Raphael;
-                    require(['//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'], function () {
-                        deferred.resolve(window.Morris);
-                    });
-                }
-            );
-
-            return deferred.promise;
+                require(
+                    [
+                        '//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js',
+                        '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'
+                    ],
+                    function (Raphael) {
+                        window.Raphael = Raphael;
+                        require(['//cdnjs.cloudflare.com/ajax/libs/morris.js/0.4.2/morris.min.js'], function () {
+                            resolve(window.Morris);
+                        });
+                    }
+                );
+            });
         }])
         .directive('initiativesStatistics', function () {
             return {
