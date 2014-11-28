@@ -1,4 +1,4 @@
-/* global angular, _ */
+/* global angular, Bacon */
 define(
     [
         'data-initiatives/data-initiatives',
@@ -21,28 +21,25 @@ define(
                 scope: {
                     initiative: '=initiative'
                 },
-                controller: ['$scope', 'drawSingle', 'GoogleVisualization', '$timeout',
-                    function($scope, drawSingle, GoogleVisualization, $timeout) {
-                        $scope.$watch('initiative', function(initiative) {
-                            if (!_.isObject(initiative) || !_.isString(initiative.id)) {
-                                return;
-                            }
-                            GoogleVisualization.then(function(GoogleVisualization) {
-                                $timeout(function() {
-                                    drawSingle('initiative-chart-fulltime', initiative, GoogleVisualization);
+                controller: ['$scope', 'drawSingle', 'GoogleVisualization',
+                    function($scope, drawSingle, GoogleVisualization) {
+                        var containerId = Bacon.constant('initiative-chart-fulltime');
+                        GoogleVisualization = Bacon.fromPromise(GoogleVisualization);
+
+                        var initiative =
+                            Bacon.fromBinder(function(sink) {
+                                $scope.$watch('initiative', function(value) {
+                                    sink(new Bacon.Next(value));
                                 });
                             });
-                        });
+
+                        Bacon.onValues(containerId, initiative, GoogleVisualization, drawSingle);
                     }],
                 template: '<div ng-transclude></div>'
             };
         })
         .factory('drawSingle', ['$filter', function($filter) {
             return function(containerId, initiative, GoogleVisualization) {
-                if (!document.getElementById(containerId)) {
-                    return;
-                }
-
                 var startDate = new Date(initiative.startDate);
 
                 var data = new GoogleVisualization.DataTable();
