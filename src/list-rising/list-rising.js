@@ -12,10 +12,7 @@ define(['data-initiatives/data-initiatives', 'initiatives-list/initiatives-list'
         .directive('listRising', function () {
             return {
                 template:
-                    '<h3>' +
-                        'Viimeisten kahden viikon aikana kannatetuimmat aloitteet' +
-                        '<div facebook-share class="pull-right">' +
-                    '</h3>' +
+                    '<h3>Viimeisten kahden viikon aikana kannatetuimmat aloitteet</h3>' +
                     '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>',
 
                 controller: ['$scope', 'ListData', 'histories', function($scope, ListData, histories) {

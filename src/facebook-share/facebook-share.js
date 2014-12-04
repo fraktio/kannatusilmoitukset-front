@@ -8,9 +8,9 @@ define([], function () {
                 template: '<iframe scrolling="no" frameborder="0" allowTransparency="true"></iframe>',
                 link: function (scope, element) {
                     element[0].children[0].src =
-                        '//www.facebook.com/plugins/share_button.php?href=' +
+                        '//www.facebook.com/plugins/share_button.php?locale=fi_FI&href=' +
                         window.location +
-                        '&layout=button_count&appId=1472730843000242';
+                        '&layout=button&appId=1472730843000242';
                 }
             };
         });

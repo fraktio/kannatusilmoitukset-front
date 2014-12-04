@@ -7,7 +7,7 @@ define(['data-initiatives/data-initiatives', 'initiatives-list/initiatives-list'
         .directive('listEnded', function () {
             return {
                 template:
-                    '<h3>Kannatetuimmat päättyneet aloitteet<div facebook-share class="pull-right"></div></h3>' +
+                    '<h3>Kannatetuimmat päättyneet aloitteet</h3>' +
                     '<initiatives-list initiatives="initiatives" list="list"></initiatives-list>',
 
                 controller: ['$scope', 'ListData', function($scope, ListData) {
