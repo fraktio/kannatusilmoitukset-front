@@ -4,32 +4,15 @@ Front end for the citizens' initiative visualization service https://kannatusilm
 
 ## Data
 
-The initiative support data is currently available in four forms, all updated hourly.
+If you'd like to get the initiative support history data, please contact us.
 
 You may use the data for any purpose.
 
-### Original format with hourly data points
-
-https://kannatusilmoitukset.fi/initiatives-all.json
-
-### Streaked data
-
-A similar format with values streaked:
-
-{'date1':1,'date2':1,'date3':1,'date4':2} -> {'date1':1,'date3':1,'date4':2}
-
-https://kannatusilmoitukset.fi/initiatives-sorted-streaked.json
-
-### Single initiative streaked
-
-Similar to streaked data, but separated to a separate file for each initiative.
-
-http://kannatusilmoitukset.fi/initiatives/33.json
-
-### Meta + single initiative png
+Currently automatically updated data versions:
 
 https://kannatusilmoitukset.fi/initiatives/img/meta.json
 https://kannatusilmoitukset.fi/initiatives/img/33.png
+https://kannatusilmoitukset.fi/initiatives/33.json
 
 ## Installation
 
