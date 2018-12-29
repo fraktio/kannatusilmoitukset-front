@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/initiatives/*"
+  to = "http://data.kannatusilmoitukset.fi/initiatives/:splat"
+  status = 200
+
